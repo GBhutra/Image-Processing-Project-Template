@@ -72,7 +72,6 @@
 				45B4A29C1DBD26F200F2CDB6 /* doc */,
 				45B4A29E1DBD26F200F2CDB6 /* lib */,
 				45B4A29F1DBD26F200F2CDB6 /* src */,
-				4528AE111DBD24C6007AAFBB /* Image Processing Template */,
 				4528AE101DBD24C6007AAFBB /* Products */,
 				45B4A2B51DBD49C500F2CDB6 /* Frameworks */,
 			);
@@ -84,13 +83,6 @@
 				4528AE0F1DBD24C6007AAFBB /* Image Processing Template */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		4528AE111DBD24C6007AAFBB /* Image Processing Template */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Image Processing Template";
 			sourceTree = "<group>";
 		};
 		4588FB141DBD4BEA00F6EC90 /* include */ = {
