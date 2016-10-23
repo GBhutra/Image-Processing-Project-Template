@@ -17,7 +17,7 @@
 #include "utility.hpp"
 
 class cImage	{
-	//friend class cHistogram;
+protected:
     int iHeight, iWidth, iNumChannels;
 	vector<vector<cPixel>>cPixMap;
 public:
@@ -41,5 +41,19 @@ public:
 	void writeToPPMFile(string filename);
     friend void imgToArray(cImage& img, char* ptr);
 };
+
+class cHistogram : public cImage{
+private:
+    vector<int> arrRed;
+    vector<int> arrBlue;
+    vector<int> arrGreen;
+public:
+    cHistogram() : arrRed(vector<int>(256,0)),arrBlue(vector<int>(256,0)),arrGreen(vector<int>(256,0)), cImage() {};
+    cHistogram(int width, int height) : arrRed(vector<int>(256,0)),arrBlue(vector<int>(256,0)),arrGreen(vector<int>(256,0)), cImage(width, height) {};
+    cHistogram(int width, int height, RGB bgColor) : arrRed(vector<int>(256,0)),arrBlue(vector<int>(256,0)),arrGreen(vector<int>(256,0)), cImage(width, height,bgColor) {};
+    
+    void genHistogram(cImage& img);
+};
+
 
 #endif /* cImage_hpp */

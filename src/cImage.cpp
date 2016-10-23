@@ -80,6 +80,74 @@ void cImage::setPixelAtXY(int x, int y, cPixel p)    {
     cPixMap[x][y] = p;
 }
 
+void cHistogram::genHistogram(cImage& img)    {
+    for (int i=0;i<img.getHeight();++i) {
+        for (int j=0;j<img.getWidth();++j) {
+            cPixel p = img.getPixelAtXY(i,j);
+            arrRed[p.getRed()]++;
+            arrGreen[p.getGreen()]++;
+            arrBlue[p.getBlue()]++;
+        }
+    }
+    int max=0;
+    for (int i=0;i<256;i++)    {
+        max=max<arrRed[i] ? arrRed[i] : max;
+        max=max<arrGreen[i] ? arrGreen[i] : max;
+        max=max<arrBlue[i] ? arrBlue[i] : max;
+    }
+    int x=0,y=0;
+    double temp=0.8*iHeight;
+    double normVal = 0;
+    RGB red = {255,0,0};
+    RGB green = {0,255,0};
+    RGB blue = {0,0,255};
+    for (int i=0;i<256;i++)   {
+        normVal = arrRed[i]/max;
+        y = static_cast<int>(temp*normVal);
+        setPixelAtXY(x,y,red);
+        normVal = arrGreen[i]/max;
+        y = static_cast<int>(temp*normVal);
+        setPixelAtXY(x,y,green);
+        normVal = arrBlue[i]/max;
+        y = static_cast<int>(temp*normVal);
+        setPixelAtXY(x,y,blue);
+        x+=iWidth/256;
+    }
+}
+
+/*cImage cHistogram::drawHist()   {
+    int max=0;
+    for (int i=0;i<m_iArrRed.size();i++)    {
+        max=max<m_iArrRed[i] ? m_iArrRed[i] : max;
+        max=max<m_iArrGreen[i] ? m_iArrGreen[i] : max;
+        max=max<m_iArrBlue[i] ? m_iArrBlue[i] : max;
+    }
+    
+    cVector2D currR = cVector2D(1,(m_iArrRed[0]/(double)max)*280);
+    cVector2D nextR;
+    for (int i=1;i<m_iArrRed.size();i++)    {
+        nextR = cVector2D(i*2+1,(m_iArrRed[i]/(double)max)*280);
+        connectVector2DByLine(currR,nextR,pixels,{255,0,0});
+        currR = nextR;
+    }
+    cVector2D currG = cVector2D(1,(m_iArrGreen[0]/(double)max)*280);
+    cVector2D nextG;
+    for (int i=1;i<m_iArrGreen.size();i++)    {
+        nextG = cVector2D(i*2+1,(m_iArrGreen[i]/(double)max)*280);
+        connectVector2DByLine(currG,nextG,pixels,{0,255,0});
+        currG = nextG;
+    }
+    cVector2D currB = cVector2D(1,(m_iArrBlue[0]/(double)max)*280);
+    cVector2D nextB;
+    for (int i=1;i<m_iArrGreen.size();i++)    {
+        nextB = cVector2D(i*2+1,(m_iArrBlue[i]/(double)max)*280);
+        connectVector2DByLine(currB,nextB,pixels,{0,0,255});
+        currB = nextB;
+    }
+    return pixels;
+};*/
+
+
 void imgToArray(cImage& img, char* ptr)    {
     int iterator =0;
     for (int i=0;i<img.iWidth;++i)	{

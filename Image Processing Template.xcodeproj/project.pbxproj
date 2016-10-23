@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		4588FB231DBD5B7A00F6EC90 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 4588FB221DBD5B7A00F6EC90 /* Makefile */; };
 		45B4A2AE1DBD26F200F2CDB6 /* 2dShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 45B4A2A01DBD26F200F2CDB6 /* 2dShapes.cpp */; };
-		45B4A2AF1DBD26F200F2CDB6 /* histogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 45B4A2A31DBD26F200F2CDB6 /* histogram.cpp */; };
 		45B4A2B01DBD26F200F2CDB6 /* cImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 45B4A2A51DBD26F200F2CDB6 /* cImage.cpp */; };
 		45B4A2B11DBD26F200F2CDB6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 45B4A2A71DBD26F200F2CDB6 /* main.cpp */; settings = {COMPILER_FLAGS = "-Wno-deprecated"; }; };
 		45B4A2B21DBD26F200F2CDB6 /* cPixel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 45B4A2A91DBD26F200F2CDB6 /* cPixel.cpp */; };
@@ -34,7 +33,6 @@
 		4528AE0F1DBD24C6007AAFBB /* Image Processing Template */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Image Processing Template"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4588FB151DBD4BEA00F6EC90 /* 2dShapes.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = 2dShapes.hpp; sourceTree = "<group>"; };
 		4588FB161DBD4BEA00F6EC90 /* filters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = filters.hpp; sourceTree = "<group>"; };
-		4588FB171DBD4BEA00F6EC90 /* histogram.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = histogram.hpp; sourceTree = "<group>"; };
 		4588FB181DBD4BEA00F6EC90 /* cImage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cImage.hpp; sourceTree = "<group>"; };
 		4588FB191DBD4BEA00F6EC90 /* manipulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = manipulation.hpp; sourceTree = "<group>"; };
 		4588FB1A1DBD4BEA00F6EC90 /* cPixel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cPixel.hpp; sourceTree = "<group>"; };
@@ -46,7 +44,6 @@
 		4588FB281DBD6AFA00F6EC90 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		45B4A29D1DBD26F200F2CDB6 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
 		45B4A2A01DBD26F200F2CDB6 /* 2dShapes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = 2dShapes.cpp; sourceTree = "<group>"; };
-		45B4A2A31DBD26F200F2CDB6 /* histogram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = histogram.cpp; sourceTree = "<group>"; };
 		45B4A2A51DBD26F200F2CDB6 /* cImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cImage.cpp; sourceTree = "<group>"; };
 		45B4A2A71DBD26F200F2CDB6 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		45B4A2A91DBD26F200F2CDB6 /* cPixel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cPixel.cpp; sourceTree = "<group>"; };
@@ -96,7 +93,6 @@
 			children = (
 				4588FB151DBD4BEA00F6EC90 /* 2dShapes.hpp */,
 				4588FB161DBD4BEA00F6EC90 /* filters.hpp */,
-				4588FB171DBD4BEA00F6EC90 /* histogram.hpp */,
 				4588FB181DBD4BEA00F6EC90 /* cImage.hpp */,
 				4588FB191DBD4BEA00F6EC90 /* manipulation.hpp */,
 				4588FB1A1DBD4BEA00F6EC90 /* cPixel.hpp */,
@@ -133,7 +129,6 @@
 			isa = PBXGroup;
 			children = (
 				45B4A2A01DBD26F200F2CDB6 /* 2dShapes.cpp */,
-				45B4A2A31DBD26F200F2CDB6 /* histogram.cpp */,
 				45B4A2A51DBD26F200F2CDB6 /* cImage.cpp */,
 				45B4A2A71DBD26F200F2CDB6 /* main.cpp */,
 				45B4A2A91DBD26F200F2CDB6 /* cPixel.cpp */,
@@ -232,7 +227,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				45B4A2B31DBD26F200F2CDB6 /* cVector2d.cpp in Sources */,
-				45B4A2AF1DBD26F200F2CDB6 /* histogram.cpp in Sources */,
 				45B4A2B21DBD26F200F2CDB6 /* cPixel.cpp in Sources */,
 				45B4A2AE1DBD26F200F2CDB6 /* 2dShapes.cpp in Sources */,
 				45B4A2B11DBD26F200F2CDB6 /* main.cpp in Sources */,
