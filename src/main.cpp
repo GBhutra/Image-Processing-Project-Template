@@ -23,6 +23,7 @@
 using namespace std;
 
 int main(int argc, char* argv[])	{
+    
     canvas.readPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test2.pbm");
     canvas.writeToPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test3.pbm");
     glutInit(&argc, argv);
