@@ -1,0 +1,5 @@
+#OSX related file
+.DS_Store
+
+# build and bin dierctories
+build

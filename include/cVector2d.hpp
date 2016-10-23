@@ -11,14 +11,16 @@ const double pi = std::acos(-1);
 
 
 class cVector2D {
-    double m_dX, m_dY;
+    double dX, dY;
 public:
-    cVector2D(double xp, double yp): m_dX(xp), m_dY(yp) {};
-    cVector2D(double degrees);
-    cVector2D(): m_dX(0), m_dY(0) {};
+    cVector2D(): dX(0), dY(0) {};
+    cVector2D(double xp, double yp): dX(xp), dY(yp) {
+        dX = xp;
+        dY=yp;
+    };
     
-    inline double mod() { return sqrt(pow(m_dX,2.0)+pow(m_dY,2.0));    };
-    inline void norm()  {   m_dX=m_dX/this->mod(); m_dY=m_dY/this->mod();   };
+    inline double mod() { return sqrt(pow(dX,2.0)+pow(dY,2.0));    };
+    inline void norm()  {   dX=dX/this->mod(); dY=dY/this->mod();   };
     
     double operator*(const cVector2D& vec);
     cVector2D 	operator* 	(double);

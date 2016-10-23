@@ -12,7 +12,7 @@
 #include "cPixel.hpp"
 #include "cImage.hpp"
 #include "histogram.hpp"
-#include "vector2d.hpp"
+#include "cVector2d.hpp"
 
 
 double h0(double t){	return 2*t*t*t - 3*t*t + 1;}

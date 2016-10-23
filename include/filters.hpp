@@ -13,7 +13,7 @@
 #include "cPixel.hpp"
 #include "cImage.hpp"
 #include "histogram.hpp"
-#include "vector2d.hpp"
+#include "cVector2d.hpp"
 #include "2dShapes.hpp"
 
 typedef vector<vector<double>> kernel;

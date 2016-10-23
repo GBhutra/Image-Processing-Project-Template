@@ -8,6 +8,15 @@
 #include "cPixel.hpp"
 using namespace std;
 
+RGB operator+(RGB& lhs, RGB& rhs) {
+    return {(get<0>(lhs)+get<0>(rhs)),(get<1>(lhs)+get<1>(rhs)),(get<2>(lhs)+get<2>(rhs))};
+}
+
+HSV operator+(HSV& lhs, HSV& rhs) {
+    return {(get<0>(lhs)+get<0>(rhs)),(get<1>(lhs)+get<1>(rhs)),(get<2>(lhs)+get<2>(rhs))};
+}
+
+
 void cPixel::operator=(const cPixel& rhs)	{
     color = rhs.color;
 }
