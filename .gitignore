@@ -3,3 +3,5 @@
 
 # build and bin dierctories
 build
+bin
+test
