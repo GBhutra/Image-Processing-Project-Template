@@ -10,8 +10,8 @@
 #define filters_h
 
 
-#include "pixel.hpp"
-#include "image.hpp"
+#include "cPixel.hpp"
+#include "cImage.hpp"
 #include "histogram.hpp"
 #include "vector2d.hpp"
 #include "2dShapes.hpp"

@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <cmath>
-#include "pixel.hpp"
-#include "image.hpp"
+#include "cPixel.hpp"
+#include "cImage.hpp"
 
 using namespace std;
 const double pi = std::acos(-1);

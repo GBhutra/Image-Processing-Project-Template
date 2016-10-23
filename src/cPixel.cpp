@@ -1,32 +1,36 @@
-#include "pixel.hpp"
-
+//
+//  cPixel.cpp
+//  ImageProcessingProjects
+//
+//  Created by Ghanshyam Bhutra on 10/22/16.
+//  Copyright © 2016 Ghanshyam Bhutra. All rights reserved.
+//
+#include "cPixel.hpp"
 using namespace std;
 
 void cPixel::operator=(const cPixel& rhs)	{
-	m_iR = rhs.m_iR;
-	m_iG = rhs.m_iG;
-	m_iB = rhs.m_iB;
+    color = rhs.color;
 }
 cPixel operator+(const cPixel& lhs, const cPixel& rhs)   {
-     int r = lhs.m_iR+rhs.m_iR;
-     int g = lhs.m_iG+rhs.m_iG;
-     int b = lhs.m_iB+rhs.m_iB;
+    int r = get<0>(lhs.color)+get<0>(rhs.color);
+    int g = get<1>(lhs.color)+get<1>(rhs.color);
+    int b = get<2>(lhs.color)+get<2>(rhs.color);
     return cPixel(r,g,b);
 };
 
 cPixel operator-(const cPixel& lhs, const cPixel& rhs)   {
-     int r = lhs.m_iR+rhs.m_iR;
-     int g = lhs.m_iG+rhs.m_iG;
-     int b = lhs.m_iB+rhs.m_iB;
+    int r = get<0>(lhs.color)-get<0>(rhs.color);
+    int g = get<1>(lhs.color)-get<1>(rhs.color);
+    int b = get<2>(lhs.color)-get<2>(rhs.color);
     return cPixel(r,g,b);
 };
 
 HSV cPixel::toHSV()	{
 	double red, green, blue,h,s,v;
     double max, min, delta;
-    red 	= static_cast<double>(m_iR) / 255.0; 
-    green 	= static_cast<double>(m_iG) / 255.0; 
-    blue 	= static_cast<double>(m_iB) / 255.0;
+    red 	= static_cast<double>(get<0>(color)) / 255.0;
+    green 	= static_cast<double>(get<1>(color)) / 255.0;
+    blue 	= static_cast<double>(get<2>(color)) / 255.0;
     
     max = maximum(red, green, blue);
     min = minimum(red, green, blue);

@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <vector>
-#include "image.hpp"
-#include "pixel.hpp"
+#include "cImage.hpp"
+#include "cPixel.hpp"
 #include "vector2d.hpp"
 
 using namespace std;
