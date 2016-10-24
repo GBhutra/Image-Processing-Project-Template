@@ -18,8 +18,9 @@
 #include <sstream>
 #include "manipulation.hpp"
 #include "filters.hpp"
-#include "glFunctions.cpp"
 #include "2dShapes.hpp"
+#include "glFunctions.h"
+
 
 using namespace std;
 

@@ -16,7 +16,6 @@
 
 cImage canvas;
 
-/////// Do Not Edit Functions
 static void init(void)  {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f ); //Set Background Color
 }
@@ -46,10 +45,8 @@ static void processMouse(int button, int state, int x, int y) {
     if(state == GLUT_UP)
         exit(0);               // Exit on mouse click.
 }
-////////////////////////
 // Keyboard press callback
 void processKeyBoard(unsigned char key, int x, int y)	/* called on key press */	{
     std::cout<<"Keyboard Key pressed : "<<key<<std::endl;
     glutPostRedisplay();
 }
-////////////////////////
