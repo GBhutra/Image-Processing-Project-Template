@@ -1,40 +1,46 @@
+//
+//  cVector2d.cpp
+//  Digital Image Processing
+//
+//  Created by Ghanshyam Bhutra on 10/16/16.
+//  Copyright © 2016 Ghanshyam Bhutra. All rights reserved.
+//
+
 #include "cVector2d.hpp"
 
-/*cVector2D::cVector2D(double deg)  {
-    dX = cos((deg/360)*2*pi);
-    dY = sin((deg/360)*2*pi);
-}*/
-
-double cVector2D::operator* (const cVector2D& vec)  {
-    return dX*vec.dX + dY*vec.dY;
+double magnitude(const vector2D& v)   {   return (sqrt(pow(v.first,2)+pow(v.second,2)));  }
+vector2D unitVector(const vector2D& v)    {
+    double mag = magnitude(v);
+    return {v.first/mag,v.second/mag};
+}
+vector2D createVectorFromDeg(double deg)    {
+    return {cos(deg*RAD), sin(deg*RAD)};
+}
+vector2D operator+(const vector2D& v1, const vector2D& v2)  {   return {v1.first+v2.first,v1.second+v2.second}; }
+vector2D operator-(const vector2D& v1, const vector2D& v2)  {   return {v1.first-v2.first,v1.second-v2.second}; }
+void operator+=(vector2D& v1, const vector2D& v2) {
+    v1.first+=v2.first;
+    v1.second+=v2.second;
+}
+void operator-=(vector2D& v1, const vector2D& v2){
+    v1.first-=v2.first;
+    v1.second-=v2.second;
 }
 
-cVector2D cVector2D::operator* (double l)  {
-    return cVector2D(dX*l, dY*l);
+void operator*(vector2D& v, double val) {
+    v.first*=val;
+    v.second*=val;
+}
+void operator/(vector2D& v, double val){
+    v.first/=val;
+    v.second/=val;
 }
 
-cVector2D cVector2D::operator/ (double l)  {
-    return cVector2D(dX/l, dY/l);
+double dot(const vector2D& v1, const vector2D& v2)  {
+    return (v1.first*v2.first+v1.second*v2.second);
 }
 
-cVector2D cVector2D::operator+ (const cVector2D& vec)  {
-    return cVector2D(dX+vec.dX, dY+vec.dY);
-}
-
-void cVector2D::operator+= (const cVector2D& vec)   {
-    dX += vec.dX;
-    dY += vec.dY;
-}
-
-cVector2D cVector2D::operator- (const cVector2D& vec)  {
-    return cVector2D(dX-vec.dX, dY-vec.dY);
-}
-
-void cVector2D::operator-= (const cVector2D& vec)   {
-    dX -= vec.dX;
-    dY -= vec.dY;
-}
-
-cVector2D cVector2D::perpendicular() {
-    return cVector2D(-dY, dX);
+vector2D normalVector(const vector2D& v)  {
+    double mag = magnitude(v);
+    return {-v.first/mag,v.second/mag};
 }

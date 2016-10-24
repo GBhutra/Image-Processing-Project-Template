@@ -25,11 +25,19 @@
 using namespace std;
 
 int main(int argc, char* argv[])	{
-    //cImage img("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test.pbm");
+    //cImage img("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/guitar.ppm");
+    //img.writeToPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/guitar2.ppm");
+    //cImage cont("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test3.ppm");
     //canvas = cImage(img.getWidth(),img.getHeight());
-    //localFilter::gussianBlur(img, canvas, 5);
-    canvas.readPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test.pbm");
+    //localFilter::motionBlur(img, canvas, cont);
+    //canvas.readPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/cube.pbm");
     RGB white{255,255,255};
+    canvas = cImage(400,300,{0,0,0});
+    vector2D p1(10,10);
+    vector2D p2(100,100);
+    drawLineSegment(p1, p2, canvas, white);
+    //canvas.writeToPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/aa.pbm");
+    //line(p2, p1, canvas, white);
     glutInit(&argc, argv);
     glutInitWindowPosition(0, 0); // Where the window will display on-screen.
     glutInitWindowSize(canvas.getWidth(), canvas.getHeight());

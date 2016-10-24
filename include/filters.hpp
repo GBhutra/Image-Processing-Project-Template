@@ -15,6 +15,8 @@
 #include "cVector2d.hpp"
 #include "2dShapes.hpp"
 
+
+
 typedef vector<vector<double>> kernel;
 
 double gaussian (double x, double mu, double sigma) {
@@ -59,49 +61,6 @@ namespace globalFilter {
 }
 
 namespace localFilter {
-    void radialFilter(cImage& img,int numCircles)  {
-        int cenX =img.getWidth()/2,cenY=img.getHeight()/2;
-        float maxRadius = cenX > cenY ? cenY : cenX;
-        vector<cCircle> rings;
-        double radius = maxRadius;
-        for (int i=0;i<numCircles;i++)  {
-            rings.push_back(cCircle(cenY,cenX,radius));
-            radius = radius/numCircles;
-        }
-        cPixel p;
-        int rSum=0,gSum=0,bSum=0,numPixels=0;
-        for (int x=0;x<img.getHeight();++x) {
-            for (int y=0;y<img.getWidth();y++) {
-                for (int i=rings.size()-2;i>=0;i--) {
-                    if(!rings[i].inCircle(x,y))  {
-                        int kSize = rings.size()-1-i;
-                        int kernelDimension = 2*kSize+1;
-                        p = img.getPixelAtXY(x,y);
-                        rSum=0,gSum=0,bSum=0,numPixels=0;
-                        for (int i=0;i<kernelDimension;i++) {
-                            for (int j=0;j<kernelDimension;j++) {
-                                int h = x-kSize+i;
-                                int w = y-kSize+j;
-                                if (0<=w && img.getWidth()>w && 0<=h && img.getHeight()>h)    {
-                                    cPixel pTemp = img.getPixelAtXY(h,w);
-                                    rSum+=pTemp.getRed();
-                                    bSum+=pTemp.getBlue();
-                                    gSum+=pTemp.getGreen();
-                                    numPixels++;
-                                }
-                            }
-                        }
-                        rSum = rSum/numPixels;
-                        bSum = bSum/numPixels;
-                        gSum = gSum/numPixels;
-                        RGB col = {rSum,gSum,bSum};
-                        img.setPixelAtXY(x,y,col);
-                    }
-                }
-            }
-        }
-    }
-    
     void applyConvolutionFilter(cImage& inputImg, cImage& outImg, kernel k, bool normalizedKernel = false)   {
         if (0==k.size() || 0==(k.size()%2))
             return;
@@ -134,7 +93,7 @@ namespace localFilter {
                         int w = x-(k.size()%2)+i;
                         int h = y-(k[0].size()%2)+j;
                         if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
-                            cPixel pTemp = inputImg.getPixelAtXY(w,h);
+                            cPixel pTemp = inputImg.getPixelAtXY(w,w);
                             rSum+=pTemp.getRed()*k[i][j];
                             bSum+=pTemp.getBlue()*k[i][j];;
                             gSum+=pTemp.getGreen()*k[i][j];;
@@ -147,12 +106,76 @@ namespace localFilter {
         }
     }
     
+    void applyConvolutionFilter(cImage& inputImg, cImage& outImg, kernel k, int x, int y, bool normalizedKernel = false)   {
+        if (0==k.size() || 0==(k.size()%2))
+            return;
+        if (0==k[0].size() || 0==(k[0].size()%2))
+            return;
+        if (inputImg.getHeight()!=outImg.getHeight() || inputImg.getWidth()!=inputImg.getWidth())
+            return;
+        double sum=0;
+        //normalized
+        if (!normalizedKernel)  {
+            for (int i=0;i<k.size();i++) {
+                for (int j=0;j<k[0].size();j++) {
+                    sum+=k[i][j];
+                }
+            }
+            for (int i=0;i<k.size();i++) {
+                for (int j=0;j<k[0].size();j++) {
+                    k[i][j]/=sum;
+                }
+            }
+        }
+        cPixel p;
+        double rSum=0,gSum=0,bSum=0;
+        p = inputImg.getPixelAtXY(x, y);
+        rSum=0,gSum=0,bSum=0;
+        for (int i=0;i<k[0].size();i++) {
+            for (int j=0;j<k.size();j++) {
+                int w = x-(k.size()%2)+i;
+                int h = y-(k[0].size()%2)+j;
+                if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
+                    cPixel pTemp = inputImg.getPixelAtXY(w,w);
+                    rSum+=pTemp.getRed()*k[i][j];
+                    bSum+=pTemp.getBlue()*k[i][j];;
+                    gSum+=pTemp.getGreen()*k[i][j];;
+                }
+            }
+        }
+        RGB col = {static_cast<int>(rSum),static_cast<int>(gSum),static_cast<int>(bSum)};
+        outImg.setPixelAtXY(x, y,col);
+    }
+    
     /*void motionBlur(cImage& inputImg, cImage& outImg, cImage& controlImg)   {
+        HSV pix;
+        for (int w=0;w<inputImg.getWidth();w++) {
+            for (int h=0;h<inputImg.getHeight();h++)    {
+                pix = controlImg.getPixelAtXY(w, h).toHSV();
+                double flen = 3+(get<1>(pix)*7)+(get<2>(pix)*7);
+                if(flen<3)  flen=3;
+                double ang = get<0>(pix);
+                double cang = cos(ang/(2*PI));
+                double sang = sin(ang/(2*PI));
+                cVector2D p2((flen/2)*cang, (flen/2)*sang);
+                cVector2D p1(-p2.getX(), -p2.getY());
+                double fsize = 2*(abs(p2.getX())>abs(p2.getY())?abs(p2.getX()):abs(p2.getY()));
+                if(fsize<0) fsize = -fsize;
+                    kernel k(static_cast<int>(fsize+1+0.5), vector<double>(static_cast<int>(fsize+1+0.5),0));
+                int line_pts = ((p2-p1).mod())/0.7;
+                cVector2D slope = (p2-p1)*(1.0/line_pts);
+                cVector2D curr = p1;
+                for(int i=0;i<line_pts;i++){
+                    k[static_cast<int>(curr.getX()+k.size()/2)][static_cast<int>(curr.getY()+k.size()/2)]=1;
+                    curr+=slope;
+                }
+                applyConvolutionFilter(inputImg,outImg,k,w,h);
+            }
+        }
         //pixmap *newmap = new pixmap(pmap->W, pmap->H);
         //for(int y=0;y<pmap->H;y++){
         //    for(int x=0;x<pmap->W;x++){
-        for
-            color cclr = cmap->get(x, y);
+        /*    color cclr = cmap->get(x, y);
         double h, s, v;
         clrtoHSV(cclr, h, s, v);
         double flen = 3+s*7+v*7;//cclr.r/20;
@@ -171,7 +194,7 @@ namespace localFilter {
         gvector p1(-p2.x, -p2.y);
         double fsize = 2*(MOD(p2.x)>MOD(p2.y)?MOD(p2.x):MOD(p2.y));
         if(fsize<0) fsize = -fsize;
-        filter ifil(fsize+1+0.5, fsize+1+0.5);
+           filter ifil(fsize+1+0.5, fsize+1+0.5);
         //cout<<"size "<<ifil.w<<endl;
         //cout<<"p1 "<<p1<<" p2 "<<p2<<endl;
         

@@ -10,6 +10,11 @@
 #define utility_h
 
 #include <iostream>
+#include <cmath>
+
+//constants
+const double PI = acos(-1);
+const double RAD = PI/180;
 
 /*Debugging Definitions*/
 #define DBG_LVL 3
