@@ -82,40 +82,6 @@ void cImage::setPixelAtXY(int x, int y, cPixel p)    {
     cPixMap[x][y] = p;
 }
 
-/*
-void cHistogram::genHistogram(cImage& img)    {
-    for (int i=0;i<img.getHeight();++i) {
-        for (int j=0;j<img.getWidth();++j) {
-            cPixel p = img.getPixelAtXY(i,j);
-            arrRed[p.getRed()]++;
-            //arrGreen[p.getGreen()]++;
-            //arrBlue[p.getBlue()]++;
-        }
-    }
-    int max=0;
-    for (int i=0;i<256;i++)    {
-        max=max<arrRed[i] ? arrRed[i] : max;
-        max=max<arrGreen[i] ? arrGreen[i] : max;
-        max=max<arrBlue[i] ? arrBlue[i] : max;
-    }
-    RGB red{255,0,0};
-    double tempY=0.9*iHeight;
-    double tempX=iWidth/256;
-    cVector2D currR = cVector2D(1,(arrRed[0]/(double)max)*tempY);
-    cVector2D nextR;
-    for (int i=1;i<arrRed.size();i++)    {
-        nextR = cVector2D(static_cast<int>(i*tempX),(arrRed[i]/(double)max)*tempY);
-        //connectVector2DByLine(currR,nextR,pixels,{255,0,0});
-        int line_pts = ((nextR-currR).magnitude())/PT_DIST;
-        cVector2D slope = (nextR-currR)*(1.0/line_pts);
-        for(int i=0;i<line_pts;i++){
-            setPixelAtXY((int)(currR.getY()+0.5),(int)(currR.getX()+0.5) ,red);
-            currR+=slope;
-        }
-        currR = nextR;
-    }
-}
-*/
 void imgToArray(cImage& img, char* ptr)    {
     int iterator =0;
     for (int j=0;j<img.iHeight;++j)	{
