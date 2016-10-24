@@ -11,7 +11,6 @@
 
 #include "cPixel.hpp"
 #include "cImage.hpp"
-#include "histogram.hpp"
 #include "cVector2d.hpp"
 
 

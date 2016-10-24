@@ -11,6 +11,8 @@
 
 #include <iostream>
 #include <cmath>
+#include "cVector2d.hpp"
+#include "cImage.hpp"
 
 class cCircle   {
     int x,y;
@@ -21,5 +23,8 @@ public:
     
     bool inCircle(int, int);
 };
+
+void line(cVector2D& p1, cVector2D& p2, cImage& img, RGB color);
+void drawHist(cHistogram& img);
 
 #endif /* _dShapes_hpp */

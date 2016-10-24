@@ -9,7 +9,6 @@
 using namespace std;
 const double pi = std::acos(-1);
 
-
 class cVector2D {
     double dX, dY;
 public:
@@ -22,6 +21,9 @@ public:
     inline double mod() { return sqrt(pow(dX,2.0)+pow(dY,2.0));    };
     inline void norm()  {   dX=dX/this->mod(); dY=dY/this->mod();   };
     
+    inline double getX()    { return dX;    };
+    inline double getY()    { return dY;    };
+    
     double operator*(const cVector2D& vec);
     cVector2D 	operator* 	(double);
     cVector2D 	operator/ 	(double);
@@ -30,8 +32,6 @@ public:
     cVector2D 	operator- 	(const cVector2D&);
     void 		operator-= 	(const cVector2D&);
     cVector2D perpendicular();
-    friend void connectVector2DByLine(cVector2D,cVector2D, cImage&, RGB);
 };
-
 
 #endif

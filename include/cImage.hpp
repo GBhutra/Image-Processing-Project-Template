@@ -14,7 +14,9 @@
 #include <sstream>
 #include <vector>
 #include "cPixel.hpp"
+#include "cVector2d.hpp"
 #include "utility.hpp"
+
 
 class cImage	{
 protected:
