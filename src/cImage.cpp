@@ -37,8 +37,8 @@ void cImage::readPPMFile(string filename)	{
     std::getline(inFile,str);
     iNumChannels = 3;
     cPixMap.resize(iWidth,vector<cPixel>(iHeight,cPixel(0,0,0)));
-    for (int i=iWidth-1;i>=0;i--)	{
-    	for (int j=0;j<iHeight;j++)	{
+    for (int j=iHeight-1;j>=0;j--)	{
+        for (int i=0;i<iWidth;i++)	{
             cPixMap[i][j].setRed(inFile.get());
             cPixMap[i][j].setGreen(inFile.get());
             cPixMap[i][j].setBlue(inFile.get());
@@ -119,8 +119,8 @@ void cHistogram::genHistogram(cImage& img)    {
 
 void imgToArray(cImage& img, char* ptr)    {
     int iterator =0;
-    for (int i=0;i<img.iWidth;++i)	{
-        for (int j=0;j<img.iHeight;++j)	{
+    for (int j=0;j<img.iHeight;++j)	{
+        for (int i=0;i<img.iWidth;++i)	{
             ptr[iterator++]=img.cPixMap[i][j].getRed();
             ptr[iterator++]=img.cPixMap[i][j].getGreen();
             ptr[iterator++]=img.cPixMap[i][j].getBlue();

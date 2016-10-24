@@ -25,9 +25,11 @@
 using namespace std;
 
 int main(int argc, char* argv[])	{
-    cImage img("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test2.pbm");
-    canvas = cImage(img.getWidth(),img.getHeight());
-    localFilter::gussianBlur(img, canvas, 5);
+    //cImage img("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test.pbm");
+    //canvas = cImage(img.getWidth(),img.getHeight());
+    //localFilter::gussianBlur(img, canvas, 5);
+    canvas.readPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test.pbm");
+    RGB white{255,255,255};
     glutInit(&argc, argv);
     glutInitWindowPosition(0, 0); // Where the window will display on-screen.
     glutInitWindowSize(canvas.getWidth(), canvas.getHeight());

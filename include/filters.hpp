@@ -125,16 +125,16 @@ namespace localFilter {
         }
         cPixel p;
         double rSum=0,gSum=0,bSum=0;
-        for (int x=0;x<inputImg.getHeight();++x) {
-            for (int y=0;y<inputImg.getWidth();y++) {
+        for (int x=0;x<inputImg.getWidth();x++) {
+            for (int y=0;y<inputImg.getHeight();y++) {
                 p = inputImg.getPixelAtXY(x, y);
                 rSum=0,gSum=0,bSum=0;
-                for (int i=0;i<k.size();i++) {
-                    for (int j=0;j<k[0].size();j++) {
-                        int h = x-(k.size()%2)+i;
-                        int w = y-(k[0].size()%2)+j;
+                for (int i=0;i<k[0].size();i++) {
+                    for (int j=0;j<k.size();j++) {
+                        int w = x-(k.size()%2)+i;
+                        int h = y-(k[0].size()%2)+j;
                         if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
-                            cPixel pTemp = inputImg.getPixelAtXY(h,w);
+                            cPixel pTemp = inputImg.getPixelAtXY(w,h);
                             rSum+=pTemp.getRed()*k[i][j];
                             bSum+=pTemp.getBlue()*k[i][j];;
                             gSum+=pTemp.getGreen()*k[i][j];;
@@ -147,11 +147,58 @@ namespace localFilter {
         }
     }
     
+    /*void motionBlur(cImage& inputImg, cImage& outImg, cImage& controlImg)   {
+        //pixmap *newmap = new pixmap(pmap->W, pmap->H);
+        //for(int y=0;y<pmap->H;y++){
+        //    for(int x=0;x<pmap->W;x++){
+        for
+            color cclr = cmap->get(x, y);
+        double h, s, v;
+        clrtoHSV(cclr, h, s, v);
+        double flen = 3+s*7+v*7;//cclr.r/20;
+        //cout<<"flen "<<flen<<endl;
+        if(flen<3)
+            flen=3;
+        
+        //double m = cclr.g/255.0;
+        //if(m>1) m = 1/m;
+        
+        double ang = h;//m*360;
+        //cout<<"ang "<<ang<<endl;
+        double cang = cos(ang/(2*M_PI));
+        double sang = sin(ang/(2*M_PI));
+        gvector p2((flen/2)*cang, (flen/2)*sang);
+        gvector p1(-p2.x, -p2.y);
+        double fsize = 2*(MOD(p2.x)>MOD(p2.y)?MOD(p2.x):MOD(p2.y));
+        if(fsize<0) fsize = -fsize;
+        filter ifil(fsize+1+0.5, fsize+1+0.5);
+        //cout<<"size "<<ifil.w<<endl;
+        //cout<<"p1 "<<p1<<" p2 "<<p2<<endl;
+        
+        int line_pts = ((p2-p1).mod())/0.7;
+        gvector slope = (p2-p1)*(1.0/line_pts);
+        
+        gvector curr = p1;
+        
+        //cout<<"draw_line "<<p1<<"->"<<p2<<endl;
+        for(int i=0;i<line_pts;i++){
+            ifil.get((int)(curr.x+ifil.n), (int)(curr.y+ifil.m))=1;
+            curr+=slope;
+            //cout<<curr<<endl;
+        }
+        //ifil.print();
+        ifil.normalize();
+        //cout<<"----"<<endl;
+        
+        apply_filter(newmap, pmap, &ifil, x, y);
+        }
+    }*/
+
     void boxBlur(cImage& inputImg, cImage& outImg, int kSize)   {
         kernel k(2*kSize+1,vector<double>(2*kSize+1,1));
         applyConvolutionFilter(inputImg,outImg,k);
     }
-    
+
     void gussianBlur(cImage& inputImg, cImage& outImg, int kSize)   {
         if (1>=kSize)
             return;
@@ -246,7 +293,6 @@ namespace localFilter {
             }
         }
     }
-
 }
 
 #endif /* filters_h */
