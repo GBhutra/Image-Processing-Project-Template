@@ -67,6 +67,14 @@ double star::isPointIn(const vector2D& p)  {
         return 0;
 }
 
+double func::isPointIn(const vector2D& p)    {
+   // y=50e^(-(x-250)/100)sin((x-250)/10)+250
+    if (5>(p.second-(60*exp((250-p.first)/200)*sin((p.first-250)/10))-250))
+        return 5;
+    else
+        return -5;
+}
+
 void drawPolygon(polygon& poly, cImage& img, RGB color, bool antiAlias)   {
     double in=0,r,g,b;
     RGB col;
@@ -97,6 +105,8 @@ void drawPolygon(polygon& poly, cImage& img, RGB color, bool antiAlias)   {
         }
     }
 }
+
+
 
 /*
 void cHistogram::genHistogram(cImage& img)    {

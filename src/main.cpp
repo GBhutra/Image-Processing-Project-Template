@@ -31,7 +31,9 @@ int main(int argc, char* argv[])	{
     RGB ShapeCol{30,20,50};
     canvas = cImage(500,500,backGroundCol);
     star poly(vertices);
-    drawPolygon(poly, canvas, ShapeCol);
+    func f = func();
+    drawPolygon(f, canvas, ShapeCol);
+    //drawPolygon(poly, canvas, ShapeCol);
     glutInit(&argc, argv);
     glutInitWindowPosition(0, 0); // Where the window will display on-screen.
     glutInitWindowSize(canvas.getWidth(), canvas.getHeight());

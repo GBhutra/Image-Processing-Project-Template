@@ -36,6 +36,16 @@ public:
     virtual double isPointIn(const vector2D&) = 0;
 };
 
+//This data structure defines a plane
+class plane: public polygon    {
+    line l;
+public:
+    plane() = delete;
+    /*The edges need to be declared anti-clock wise*/
+    plane(line& l);
+    double isPointIn(const vector2D&);
+};
+
 //This data structure defines a polygon
 class convex: public polygon    {
 protected:
@@ -65,13 +75,10 @@ public:
     star(vector<vector2D>& v) : convex(v) {};
 };
 
-//This data structure defines a plane
-class plane: public polygon    {
-    line l;
+//This data structure defines a decaying sin function
+class func: public polygon    {
 public:
-    plane() = delete;
-    /*The edges need to be declared anti-clock wise*/
-    plane(line& l);
+    func() {};
     double isPointIn(const vector2D&);
 };
 
