@@ -16,8 +16,11 @@ vector2D unitVector(const vector2D& v)    {
 vector2D createVectorFromDeg(double deg)    {
     return {cos(deg*RAD), sin(deg*RAD)};
 }
+
 vector2D operator+(const vector2D& v1, const vector2D& v2)  {   return {v1.first+v2.first,v1.second+v2.second}; }
+
 vector2D operator-(const vector2D& v1, const vector2D& v2)  {   return {v1.first-v2.first,v1.second-v2.second}; }
+
 void operator+=(vector2D& v1, const vector2D& v2) {
     v1.first+=v2.first;
     v1.second+=v2.second;
@@ -41,6 +44,7 @@ double dot(const vector2D& v1, const vector2D& v2)  {
 }
 
 vector2D normalVector(const vector2D& v)  {
-    double mag = magnitude(v);
-    return {-v.first/mag,v.second/mag};
+    vector2D unit = unitVector(v);
+    return {unit.second,-unit.first};
 }
+

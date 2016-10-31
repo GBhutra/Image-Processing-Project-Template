@@ -12,6 +12,7 @@ using namespace std;
 typedef pair<double,double> vector2D;
 
 double magnitude(const vector2D&);
+double direction(const vector2D&);
 vector2D unitVector(const vector2D&);
 vector2D normalVector(const vector2D&);
 vector2D createVectorFromDeg(double deg);

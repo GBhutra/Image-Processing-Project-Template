@@ -13,24 +13,69 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <cstdarg>
 #include "cVector2d.hpp"
 #include "cImage.hpp"
 
-struct line2D {
-    vector2D n;
-    double r;
-    line2D() = delete;
+// This data structure defines a line
+struct line {
+    //normal vector
+    vector2D normalUnitVector;
+    double distFromOrigin;
+    
+    line() = delete;
     //Line from 2 points
-    line2D(const vector2D&, const vector2D&);
-    //Line from a point and an angle
-    line2D(const vector2D&, const double);
+    line(const vector2D&, const vector2D&);
+    
     double isPointIn(const vector2D&);
 };
 
-void drawHalfPlane(line2D &l,cImage& img, RGB color, bool antiAlias=false);
-void drawLine(line2D &l,cImage& img, RGB color, double lineWidth=0.4);
-void drawLineSegment(vector2D& v1, vector2D& v2, cImage& img, RGB color);
 
-//void line(cVector2D& p1, cVector2D& p2, cImage& img, RGB color);
-//void drawHist(cHistogram& img);
+class polygon  {
+public:
+    virtual double isPointIn(const vector2D&) = 0;
+};
+
+//This data structure defines a polygon
+class convex: public polygon    {
+protected:
+    vector<line> edges;
+public:
+    convex() = delete;
+    /*The edges need to be declared anti-clock wise*/
+    convex(vector<vector2D>&);
+    double isPointIn(const vector2D&);
+    double numSides;
+};
+
+//This data structure defines a circle
+class circle: public polygon    {
+    vector2D center;
+    double radius;
+public:
+    circle() = delete;
+    circle(vector2D p, double r) : center(p), radius(r) {};
+    double isPointIn(const vector2D&);
+};
+
+//This data structure defines a star
+class star: public convex    {
+    double isPointIn(const vector2D&);
+public:
+    star(vector<vector2D>& v) : convex(v) {};
+};
+
+//This data structure defines a plane
+class plane: public polygon    {
+    line l;
+public:
+    plane() = delete;
+    /*The edges need to be declared anti-clock wise*/
+    plane(line& l);
+    double isPointIn(const vector2D&);
+};
+
+void drawLine(line &l,cImage& img, RGB color);
+void drawPolygon(polygon& poly, cImage& img, RGB color, bool antiAlias=false);
+
 #endif /* _dShapes_hpp */

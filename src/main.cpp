@@ -25,22 +25,13 @@
 using namespace std;
 
 int main(int argc, char* argv[])	{
-    cImage img("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/painting.ppm");
-    cHistogram hist = cHistogram(512,300,{128,128,128});
-    hist.genHistogram(img);
-    canvas = hist;
-    //img.writeToPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/guitar2.ppm");
-    //cImage cont("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test3.ppm");
-    //canvas = cImage(img.getWidth(),img.getHeight());
-    //localFilter::motionBlur(img, canvas, cont);
-    //canvas.readPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/cube.pbm");
-    //RGB white{255,255,255};
-    //canvas = cImage(400,300,{0,0,0});
-    //vector2D p1(10,10);
-    //vector2D p2(100,100);
-    //drawLineSegment(p1, p2, canvas, white);
-    //canvas.writeToPPMFile("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/aa.pbm");
-    //line(p2, p1, canvas, white);
+    vector<vector2D> vertices{{200,175},{300,175},{350,300},{250,350},{150,300}};
+    //convexPolygon convex(vertices);
+    RGB backGroundCol{170,120,150};
+    RGB ShapeCol{30,20,50};
+    canvas = cImage(500,500,backGroundCol);
+    star poly(vertices);
+    drawPolygon(poly, canvas, ShapeCol);
     glutInit(&argc, argv);
     glutInitWindowPosition(0, 0); // Where the window will display on-screen.
     glutInitWindowSize(canvas.getWidth(), canvas.getHeight());
@@ -52,6 +43,5 @@ int main(int argc, char* argv[])	{
     glutMouseFunc(processMouse);
     glutKeyboardFunc(processKeyBoard);
     glutMainLoop();
-    
     return 0;
 }

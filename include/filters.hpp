@@ -147,7 +147,7 @@ namespace localFilter {
         outImg.setPixelAtXY(x, y,col);
     }
     
-    /*void motionBlur(cImage& inputImg, cImage& outImg, cImage& controlImg)   {
+    void motionBlur(cImage& inputImg, cImage& outImg, cImage& controlImg)   {
         HSV pix;
         for (int w=0;w<inputImg.getWidth();w++) {
             for (int h=0;h<inputImg.getHeight();h++)    {
@@ -157,66 +157,25 @@ namespace localFilter {
                 double ang = get<0>(pix);
                 double cang = cos(ang/(2*PI));
                 double sang = sin(ang/(2*PI));
-                cVector2D p2((flen/2)*cang, (flen/2)*sang);
-                cVector2D p1(-p2.getX(), -p2.getY());
-                double fsize = 2*(abs(p2.getX())>abs(p2.getY())?abs(p2.getX()):abs(p2.getY()));
+                vector2D p2{(flen/2)*cang, (flen/2)*sang};
+                vector2D p1{-p2.first, -p2.second};
+                double fsize = 2*(abs(p2.first)>abs(p2.second)?abs(p2.first):abs(p2.second));
                 if(fsize<0) fsize = -fsize;
                     kernel k(static_cast<int>(fsize+1+0.5), vector<double>(static_cast<int>(fsize+1+0.5),0));
-                int line_pts = ((p2-p1).mod())/0.7;
-                cVector2D slope = (p2-p1)*(1.0/line_pts);
-                cVector2D curr = p1;
+                int line_pts = magnitude(p2-p1)/0.7;
+                vector2D slope = (p2-p1);
+                slope.first = slope.first/line_pts;
+                slope.second = slope.second;
+                vector2D curr = p1;
                 for(int i=0;i<line_pts;i++){
-                    k[static_cast<int>(curr.getX()+k.size()/2)][static_cast<int>(curr.getY()+k.size()/2)]=1;
+                    k[static_cast<int>(curr.first+k.size()/2)][static_cast<int>(curr.second)+k.size()/2]=1;
                     curr+=slope;
                 }
-                applyConvolutionFilter(inputImg,outImg,k,w,h);
+                applyConvolutionFilter(inputImg,outImg,k,w,h,false);
             }
         }
-        //pixmap *newmap = new pixmap(pmap->W, pmap->H);
-        //for(int y=0;y<pmap->H;y++){
-        //    for(int x=0;x<pmap->W;x++){
-        /*    color cclr = cmap->get(x, y);
-        double h, s, v;
-        clrtoHSV(cclr, h, s, v);
-        double flen = 3+s*7+v*7;//cclr.r/20;
-        //cout<<"flen "<<flen<<endl;
-        if(flen<3)
-            flen=3;
-        
-        //double m = cclr.g/255.0;
-        //if(m>1) m = 1/m;
-        
-        double ang = h;//m*360;
-        //cout<<"ang "<<ang<<endl;
-        double cang = cos(ang/(2*M_PI));
-        double sang = sin(ang/(2*M_PI));
-        gvector p2((flen/2)*cang, (flen/2)*sang);
-        gvector p1(-p2.x, -p2.y);
-        double fsize = 2*(MOD(p2.x)>MOD(p2.y)?MOD(p2.x):MOD(p2.y));
-        if(fsize<0) fsize = -fsize;
-           filter ifil(fsize+1+0.5, fsize+1+0.5);
-        //cout<<"size "<<ifil.w<<endl;
-        //cout<<"p1 "<<p1<<" p2 "<<p2<<endl;
-        
-        int line_pts = ((p2-p1).mod())/0.7;
-        gvector slope = (p2-p1)*(1.0/line_pts);
-        
-        gvector curr = p1;
-        
-        //cout<<"draw_line "<<p1<<"->"<<p2<<endl;
-        for(int i=0;i<line_pts;i++){
-            ifil.get((int)(curr.x+ifil.n), (int)(curr.y+ifil.m))=1;
-            curr+=slope;
-            //cout<<curr<<endl;
-        }
-        //ifil.print();
-        ifil.normalize();
-        //cout<<"----"<<endl;
-        
-        apply_filter(newmap, pmap, &ifil, x, y);
-        }
-    }*/
-
+    }
+    
     void boxBlur(cImage& inputImg, cImage& outImg, int kSize)   {
         kernel k(2*kSize+1,vector<double>(2*kSize+1,1));
         applyConvolutionFilter(inputImg,outImg,k);
@@ -272,15 +231,15 @@ namespace localFilter {
         kernel k(2*kSize+1,vector<double>(2*kSize+1,1));
         int rMin=255,bMin=255,gMin=255;
         cPixel p;
-        for (int x=0;x<inputImg.getHeight();++x) {
-            for (int y=0;y<inputImg.getWidth();++y) {
+        for (int x=0;x<inputImg.getWidth();x++) {
+            for (int y=0;y<inputImg.getHeight();y++) {
                 rMin=bMin=gMin=255;
-               for (int i=0;i<(2*kSize+1);i++) {
-                   for (int j=0;j<(2*kSize+1);j++) {
-                       int h = x-kSize+i;
-                       int w = y-kSize+j;
-                       if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
-                           p = inputImg.getPixelAtXY(h, w);
+                for (int i=0;i<(2*kSize+1);i++) {
+                    for (int j=0;j<(2*kSize+1);j++) {
+                        int w = x-kSize+i;
+                        int h = y-kSize+j;
+                        if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
+                            p = inputImg.getPixelAtXY(w,h);
                            rMin = rMin > p.getRed()     ?   p.getRed()  :   rMin;
                            gMin = gMin > p.getGreen()   ?   p.getGreen():   gMin;
                            bMin = bMin > p.getBlue()    ?   p.getBlue() :   bMin;
@@ -292,19 +251,56 @@ namespace localFilter {
             }
         }
     }
+    void erosionFilter(cImage& inputImg, cImage& outImg, cImage& contImg)   {
+        int crMax,cgMax,cbMax,rMax,bMax,gMax;
+        crMax=cgMax=cbMax=rMax=bMax=gMax=255;
+        cPixel p,c;
+        for (int x=0;x<contImg.getWidth();x++) {
+            for (int y=0;y<contImg.getHeight();y++) {
+                p = contImg.getPixelAtXY(x,y);
+                crMax = p.getRed() < crMax ? p.getRed():crMax;
+                cgMax = p.getGreen() < cgMax ? p.getGreen():cgMax;
+                cbMax = p.getBlue() < cbMax ? p.getBlue():cbMax;
+            }
+        }
+        
+        for (int x=0;x<inputImg.getWidth();x++) {
+            for (int y=0;y<inputImg.getHeight();y++) {
+                rMax=bMax=gMax=255;
+                int stx = x-(contImg.getWidth()/2);
+                int sty = y-(contImg.getHeight()/2);
+                for (int i=0;i<contImg.getWidth();i++) {
+                    for (int j=0;j<contImg.getHeight();j++) {
+                        int w = stx+i;
+                        int h = sty+j;
+                        if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
+                            c = contImg.getPixelAtXY(i,j);
+                            p = inputImg.getPixelAtXY(w,h);
+                            rMax = rMax < c.getRed()*p.getRed() ? rMax : c.getRed()*p.getRed();
+                            gMax = gMax < c.getGreen()*p.getGreen() ? gMax : c.getGreen()*p.getGreen();
+                            bMax = bMax < c.getBlue()*p.getBlue() ? bMax : c.getBlue()*p.getBlue();
+                        }
+                    }
+                    RGB col {crMax==0 ? 255: rMax/crMax, cgMax==0 ? 255: gMax/cgMax, cbMax==0 ? 255: bMax/cbMax};
+                    outImg.setPixelAtXY(x, y, col);
+                }
+            }
+        }
+    }
+    
     void dilationFilter(cImage& inputImg, cImage& outImg, int kSize)   {
         kernel k(2*kSize+1,vector<double>(2*kSize+1,1));
         int rMax=255,bMax=255,gMax=255;
         cPixel p;
-        for (int x=0;x<inputImg.getHeight();++x) {
-            for (int y=0;y<inputImg.getWidth();y++) {
+        for (int x=0;x<inputImg.getWidth();x++) {
+            for (int y=0;y<inputImg.getHeight();y++) {
                 rMax=bMax=gMax=0;
                 for (int i=0;i<(2*kSize+1);i++) {
                     for (int j=0;j<(2*kSize+1);j++) {
-                        int h = x-kSize+i;
-                        int w = y-kSize+j;
+                        int w = x-kSize+i;
+                        int h = y-kSize+j;
                         if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
-                            p = inputImg.getPixelAtXY(h,w);
+                            p = inputImg.getPixelAtXY(w,h);
                             rMax = rMax < p.getRed()     ?   p.getRed()  :   rMax;
                             gMax = gMax < p.getGreen()   ?   p.getGreen():   gMax;
                             bMax = bMax < p.getBlue()    ?   p.getBlue() :   bMax;
@@ -313,6 +309,42 @@ namespace localFilter {
                 }
                 RGB col = {rMax,gMax,bMax};
                 outImg.setPixelAtXY(x, y, col);
+            }
+        }
+    }
+    void dilationFilter(cImage& inputImg, cImage& outImg, cImage& contImg)   {
+        int crMax,cgMax,cbMax,rMax,bMax,gMax;
+        crMax=cgMax=cbMax=rMax=bMax=gMax=0;
+        cPixel p,c;
+        for (int x=0;x<contImg.getWidth();x++) {
+            for (int y=0;y<contImg.getHeight();y++) {
+                p = contImg.getPixelAtXY(x,y);
+                crMax = p.getRed() > crMax ? p.getRed():crMax;
+                cgMax = p.getGreen() > cgMax ? p.getGreen():cgMax;
+                cbMax = p.getBlue() > cbMax ? p.getBlue():cbMax;
+            }
+        }
+        
+        for (int x=0;x<inputImg.getWidth();x++) {
+            for (int y=0;y<inputImg.getHeight();y++) {
+                rMax=bMax=gMax=0;
+                int stx = x-(contImg.getWidth()/2);
+                int sty = y-(contImg.getHeight()/2);
+                for (int i=0;i<contImg.getWidth();i++) {
+                    for (int j=0;j<contImg.getHeight();j++) {
+                        int w = stx+i;
+                        int h = sty+j;
+                        if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
+                            c = contImg.getPixelAtXY(i,j);
+                            p = inputImg.getPixelAtXY(w,h);
+                            rMax = rMax > c.getRed()*p.getRed() ? rMax : c.getRed()*p.getRed();
+                            gMax = gMax > c.getGreen()*p.getGreen() ? gMax : c.getGreen()*p.getGreen();
+                            bMax = bMax > c.getBlue()*p.getBlue() ? bMax : c.getBlue()*p.getBlue();
+                        }
+                    }
+                    RGB col {crMax==0 ? 255: rMax/crMax, cgMax==0 ? 255: gMax/cgMax, cbMax==0 ? 255: bMax/cbMax};
+                    outImg.setPixelAtXY(x, y, col);
+                }
             }
         }
     }

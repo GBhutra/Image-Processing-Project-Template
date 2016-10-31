@@ -16,6 +16,12 @@
 const double PI = acos(-1);
 const double RAD = PI/180;
 
+enum{
+    On,
+    Left,
+    Right,
+}typedef PointLocation;
+
 /*Debugging Definitions*/
 #define DBG_LVL 3
 

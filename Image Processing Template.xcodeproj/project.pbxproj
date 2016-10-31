@@ -50,6 +50,17 @@
 		45B4A2AB1DBD26F200F2CDB6 /* cVector2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cVector2d.cpp; sourceTree = "<group>"; };
 		45B4A2B61DBD49C500F2CDB6 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		45B4A2B81DBD49CB00F2CDB6 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		45E83FF21DC0CE7800552DC9 /* aa.pbm */ = {isa = PBXFileReference; lastKnownFileType = file; path = aa.pbm; sourceTree = "<group>"; };
+		45E83FF31DC0CE7800552DC9 /* cube.pbm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.pbm; sourceTree = "<group>"; };
+		45E83FF41DC0CE7800552DC9 /* flower.ppm */ = {isa = PBXFileReference; lastKnownFileType = file; path = flower.ppm; sourceTree = "<group>"; };
+		45E83FF51DC0CE7800552DC9 /* guitar.ppm */ = {isa = PBXFileReference; lastKnownFileType = file; path = guitar.ppm; sourceTree = "<group>"; };
+		45E83FF61DC0CE7800552DC9 /* guitar2.ppm */ = {isa = PBXFileReference; lastKnownFileType = file; path = guitar2.ppm; sourceTree = "<group>"; };
+		45E83FF71DC0CE7800552DC9 /* mill.ppm */ = {isa = PBXFileReference; lastKnownFileType = file; path = mill.ppm; sourceTree = "<group>"; };
+		45E83FF81DC0CE7800552DC9 /* painting.ppm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = painting.ppm; sourceTree = "<group>"; };
+		45E83FF91DC0CE7800552DC9 /* test.pbm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.pbm; sourceTree = "<group>"; };
+		45E83FFA1DC0CE7800552DC9 /* test3.pbm */ = {isa = PBXFileReference; lastKnownFileType = file; path = test3.pbm; sourceTree = "<group>"; };
+		45E83FFB1DC0CE7800552DC9 /* test3.ppm */ = {isa = PBXFileReference; lastKnownFileType = file; path = test3.ppm; sourceTree = "<group>"; };
+		45E83FFC1DC1C36800552DC9 /* AoU_Hulkbuster_0003.pbm */ = {isa = PBXFileReference; lastKnownFileType = file; path = AoU_Hulkbuster_0003.pbm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +117,17 @@
 		4588FB261DBD63C200F6EC90 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				45E83FFC1DC1C36800552DC9 /* AoU_Hulkbuster_0003.pbm */,
+				45E83FF21DC0CE7800552DC9 /* aa.pbm */,
+				45E83FF31DC0CE7800552DC9 /* cube.pbm */,
+				45E83FF41DC0CE7800552DC9 /* flower.ppm */,
+				45E83FF51DC0CE7800552DC9 /* guitar.ppm */,
+				45E83FF61DC0CE7800552DC9 /* guitar2.ppm */,
+				45E83FF71DC0CE7800552DC9 /* mill.ppm */,
+				45E83FF81DC0CE7800552DC9 /* painting.ppm */,
+				45E83FF91DC0CE7800552DC9 /* test.pbm */,
+				45E83FFA1DC0CE7800552DC9 /* test3.pbm */,
+				45E83FFB1DC0CE7800552DC9 /* test3.ppm */,
 				4588FB271DBD63C200F6EC90 /* test2.pbm */,
 			);
 			path = test;
