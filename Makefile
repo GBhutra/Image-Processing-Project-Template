@@ -1,6 +1,6 @@
 #
 #  Makefile
-#  Image Processing Projet Template
+#  Image Processing Project Template
 #  by Ghanshyam Bhutra
 #
 # Determine the platform

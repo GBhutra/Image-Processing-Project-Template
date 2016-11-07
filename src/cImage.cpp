@@ -9,10 +9,22 @@
 #include "cImage.hpp"
 using namespace std;
 
-#define PT_DIST 0.9
-
 cImage::cImage(string filename)	{
 	readPPMFile(filename);
+}
+
+//Gradient background
+cImage::cImage(int x, int y, RGB color1, RGB color2)    {
+    iWidth = x;
+    iHeight = y;
+    cPixMap.resize(iWidth,vector<cPixel>(iHeight,cPixel(get<0>(color1),get<1>(color1),get<2>(color1))));
+    for (int i=0;i<iWidth;i++)  {
+        for (int j=0;j<iHeight;j++) {
+            double ratio = static_cast<double>(i)/iWidth;
+            RGB color = compose(color2, color1, ratio);
+            cPixMap[i][j] = cPixel(get<0>(color),get<1>(color),get<2>(color));
+        }
+    }
 }
 
 void cImage::readPPMFile(string filename)	{

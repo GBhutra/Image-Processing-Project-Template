@@ -9,28 +9,19 @@
 #ifndef utility_h
 #define utility_h
 
-#include <iostream>
-#include <cmath>
-
 //constants
 const double PI = acos(-1);
 const double RAD = PI/180;
+const double numSubPixels = 3;
 
-enum{
-    On,
-    Left,
-    Right,
-}typedef PointLocation;
+#define MOD(x) ((x)<0?(-(x)):(x))
+#define POS(x) ((x)<0?(0):(x))
+#define MIN(x, y) ((x)<(y)?(x):(y))
+#define MAX(x, y) ((x)>(y)?(x):(y))
+
 
 /*Debugging Definitions*/
 #define DBG_LVL 3
-
-#define NOR  "\x1B[0m"
-#define RED  "\x1B[31m"
-#define GRN  "\x1B[32m"
-#define YEL  "\x1B[33m"
-#define BLU  "\x1B[34m"
-#define WHT  "\x1B[37m"
 
 #define BOLD "\x1B[1m"
 #define UNDL "\x1B[4m"

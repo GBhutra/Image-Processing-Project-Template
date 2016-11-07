@@ -97,3 +97,11 @@ RGB HSVtoRGB(HSV pixel)   {
     b1+=get<2>(pixel)-c;
     return (make_tuple(static_cast<int>(r1*255),static_cast<int>(g1*255),static_cast<int>(b1*255)));
 }
+
+RGB compose(RGB c1, RGB c2 ,double ratio)    {
+    RGB result;
+    get<0>(result) = static_cast<int>((ratio*get<0>(c1))+(1-ratio)*get<0>(c2));
+    get<1>(result) = static_cast<int>((ratio*get<1>(c1))+(1-ratio)*get<1>(c2));
+    get<2>(result) = static_cast<int>((ratio*get<2>(c1))+(1-ratio)*get<2>(c2));
+    return result;
+}

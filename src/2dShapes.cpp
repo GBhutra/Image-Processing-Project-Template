@@ -8,8 +8,6 @@
 
 #include "2dShapes.hpp"
 
-const double numSubPixels = 3;
-
 line::line(const vector2D& p1, const vector2D& p2) {
     normalUnitVector = normalVector(p2-p1);
     distFromOrigin = dot(normalUnitVector,p1);
@@ -21,12 +19,23 @@ double line::isPointIn(const vector2D& p)  {
     return (norm-distFromOrigin);;
 }
 
-void drawLine(line &l,cImage& img, RGB color)   {
+void drawLine(line &l,cImage& img, RGB color, bool antiAlias)   {
     for (int i=0;i<img.getWidth();i++)  {
         double y = (l.distFromOrigin/l.normalUnitVector.second)-((l.normalUnitVector.first/l.normalUnitVector.second)*i);
         int j = static_cast<int>(y);
-        if(0<=y && y<img.getHeight())
+        double t = j+1-y;
+        double b = y-j;
+        if(0<=y && y<img.getHeight())   {
             img.setPixelAtXY(i, j, color);
+            if (antiAlias)  {
+                auto tp = img.getPixelAtXY(i, j+1);
+                auto bp = img.getPixelAtXY(i, j-1);
+                RGB colT{static_cast<int>((tp.getRed()*t)+(get<0>(color)*(1-t))),static_cast<int>((tp.getGreen()*t)+(get<1>(color)*(1-t))),static_cast<int>((tp.getBlue()*t)+(get<2>(color)*(1-t)))};
+                RGB colB{static_cast<int>((bp.getRed()*b)+(get<0>(color)*(1-b))),static_cast<int>((bp.getGreen()*b)+(get<1>(color)*(1-b))),static_cast<int>((bp.getBlue()*b)+(get<2>(color)*(1-b)))};
+                img.setPixelAtXY(i, j+1, colT);
+                img.setPixelAtXY(i, j-1, colB);
+            }
+        }
     }
 }
 
@@ -75,7 +84,19 @@ double func::isPointIn(const vector2D& p)    {
         return -5;
 }
 
-void drawPolygon(polygon& poly, cImage& img, RGB color, bool antiAlias)   {
+double blob::isPointIn(const vector2D& p)   {
+    double alpha = 0.4e-4;
+    double res = 0;
+    for (auto c : circles)  {
+        double dx = p.first-c.center.first;
+        double dy = p.second-c.center.second;
+        res += exp( -alpha * ( (dx*dx + dy*dy) - c.radius ) );
+    }
+    res = 1/alpha * log(res);
+    return res;
+}
+
+void drawShape(shape& poly, cImage& img, RGB color, bool antiAlias)   {
     double in=0,r,g,b;
     RGB col;
     for (int i=0;i<img.getWidth();i++)  {
@@ -92,9 +113,9 @@ void drawPolygon(polygon& poly, cImage& img, RGB color, bool antiAlias)   {
                     }
                     if (0<in)   {
                         auto p = img.getPixelAtXY(i, j);
-                        r = double(get<0>(color))*(1-in)+(p.getRed()*in);
-                        g = double(get<1>(color))*(1-in)+(p.getGreen()*in);
-                        b = double(get<2>(color))*(1-in)+(p.getBlue()*in);
+                        r = double(get<0>(color)*in)+(p.getRed()*(1-in));
+                        g = double(get<1>(color)*in)+(p.getGreen()*(1-in));
+                        b = double(get<2>(color)*in)+(p.getBlue()*(1-in));
                         col=make_tuple(static_cast<int>(r),static_cast<int>(g),static_cast<int>(b));
                         img.setPixelAtXY(i, j, col);
                     }
@@ -105,6 +126,27 @@ void drawPolygon(polygon& poly, cImage& img, RGB color, bool antiAlias)   {
         }
     }
 }
+
+void drawCircularShade(circle& c, cImage& img, RGB color)   {
+    double in=0,r,g,b;
+    int offSetX=static_cast<int>(c.center.first-c.radius);
+    int offSetY=static_cast<int>(c.center.second-c.radius);
+    for(int i=0;i<2*c.radius;i++)  {
+        for(int j=0;j<2*c.radius;j++)  {
+            in=c.isPointIn({i+offSetX,j+offSetY});
+            if (0<in)   {
+                in = in/c.radius;
+                auto p = img.getPixelAtXY(i+offSetX,j+offSetY);
+                r = double(get<0>(color))*(in)+(p.getRed()*(1-in));
+                g = double(get<1>(color))*(in)+(p.getGreen()*(1-in));
+                b = double(get<2>(color))*(in)+(p.getBlue()*(1-in));
+                RGB col=make_tuple(static_cast<int>(r),static_cast<int>(g),static_cast<int>(b));
+                img.setPixelAtXY(i+offSetX,j+offSetY, col);
+            }
+        }
+    }
+}
+
 
 
 

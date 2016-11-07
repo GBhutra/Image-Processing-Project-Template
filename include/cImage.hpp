@@ -30,11 +30,12 @@ public:
     cImage(int x, int y, RGB color): iWidth(x), iHeight(y)	{
         cPixMap.resize(iWidth,vector<cPixel>(iHeight,cPixel(get<0>(color),get<1>(color),get<2>(color))));
     };
+    cImage(int x, int y, RGB color1, RGB color2);
 	cImage(string);
 
 	//getter and setters
-	inline int getHeight()  {       return iHeight;	};
-	inline int getWidth()   {       return iWidth;	};
+    int getHeight()  {       return iHeight;	};
+    int getWidth()   {       return iWidth;	};
 	cPixel getPixelAtXY(int x,int y);
 
 	void readPPMFile(string filename);

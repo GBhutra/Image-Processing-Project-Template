@@ -49,5 +49,6 @@ public:
 };
 
 RGB HSVtoRGB(HSV pixel);
+RGB compose(RGB, RGB,double);
 
 #endif /* cPixel_hpp */

@@ -48,3 +48,113 @@ vector2D normalVector(const vector2D& v)  {
     return {unit.second,-unit.first};
 }
 
+//Matrix definitions
+mat transpose(const mat& m) {
+    mat op(m[0].size(),vector<double>(m.size(),0));
+    for (int i=0;i<m.size();i++)    {
+        for (int j=0;j<m[0].size();j++)
+            op[j][i] = m[i][j];
+    }
+    return op;
+}
+
+mat inverse(const mat& m)    {
+    mat mT = transpose(m);
+    double det = mT[0][0]*(mT[1][1]*mT[2][2]-mT[2][1]*mT[1][2]) -
+    mT[0][1]*(mT[1][0]*mT[2][2]-mT[2][0]*mT[1][2]) +
+    mT[0][2]*(mT[1][0]*mT[2][1]-mT[2][0]*mT[1][1]);
+    mat op(m);
+    op[0][0] = (mT[1][1]*mT[2][2]-mT[2][1]*mT[1][2])/det;
+    op[0][1] = -(mT[1][0]*mT[2][2]-mT[2][0]*mT[1][2])/det;
+    op[0][2] = (mT[1][0]*mT[2][1]-mT[2][0]*mT[1][1])/det;
+    op[1][0] = -(mT[0][1]*mT[2][2]-mT[2][1]*mT[0][2])/det;
+    op[1][1] = (mT[0][0]*mT[2][2]-mT[2][0]*mT[0][2])/det;
+    op[1][2] = -(mT[0][0]*mT[2][1]-mT[2][0]*mT[0][1])/det;
+    op[2][0] = (mT[0][1]*mT[1][2]-mT[1][1]*mT[0][2])/det;
+    op[2][1] = -(mT[0][0]*mT[1][2]-mT[1][0]*mT[0][2])/det;
+    op[2][2] = (mT[0][0]*mT[1][1]-mT[1][0]*mT[0][1])/det;
+    
+    return op;
+}
+
+mat identityMat(int size){
+    mat m(size,vector<double>(size,0));
+    for (int i=0;i<size;i++)
+        m[i][i] = 1;
+    return m;
+}
+
+mat rotation(double ang);
+mat scaling(double x, double y);
+mat shear(double x, double y);
+mat translation(double x, double y);
+mat perspective(double x, double y);
+
+
+mat operator*(const mat& lhs, const mat& rhs)   {
+    if (lhs[0].size()!=rhs.size())
+        return identityMat(0);
+    mat op(lhs.size(),vector<double>(rhs[0].size(),0));
+    for (int i=0;i<lhs.size();i++) {
+        for (int j=0;j<rhs[0].size();j++)   {
+            for (int k=0;k<lhs[0].size();k++)
+                op[i][j] += lhs[i][k] * rhs[k][j];
+        }
+    }
+    return op;
+}
+
+template<typename T>
+mat operator*(const mat& m, T val)    {
+    mat op(m);
+    for (auto& row : op)    {
+        for (auto& col : row)
+            col = col*val;
+    }
+    return op;
+}
+
+mat operator+(const mat& lhs, const mat& rhs)   {
+    if (lhs.size()!=rhs.size() && lhs[0].size()!=rhs[0].size())
+        return identityMat(0);
+    mat op(lhs);
+    for (int i=0;i<lhs.size();i++)    {
+        for (int j=0;j<lhs[0].size();j++)
+            op[i][j] +=rhs[i][j];
+    }
+    return op;
+}
+
+template<typename T>
+mat operator+(const mat& m, T val)    {
+    mat op(m);
+    for (auto& row : op)    {
+        for (auto& col : row)
+            col = col+val;
+    }
+    return op;
+}
+mat operator-(const mat& lhs, const mat& rhs)   {
+    if (lhs.size()!=rhs.size() && lhs[0].size()!=rhs[0].size())
+        return identityMat(0);
+    mat op(lhs);
+    for (int i=0;i<lhs.size();i++)    {
+        for (int j=0;j<lhs[0].size();j++)
+            op[i][j] -=rhs[i][j];
+    }
+    return op;
+}
+template<typename T>
+mat operator-(const mat& m, T val)    {
+    mat op(m);
+    for (auto& row : op)    {
+        for (auto& col : row)
+            col = col+val;
+    }
+    return op;
+}
+
+// Matrix and vector2d operations
+mat makeMatrix(const vector2D& v) { return {{v.first},{v.second},{1}};   }
+
+
