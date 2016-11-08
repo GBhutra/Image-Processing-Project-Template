@@ -14,7 +14,8 @@ vector2D unitVector(const vector2D& v)    {
     return {v.first/mag,v.second/mag};
 }
 vector2D createVectorFromDeg(double deg)    {
-    return {cos(deg*RAD), sin(deg*RAD)};
+    deg = DEGToRAD(deg);
+    return {cos(deg), sin(deg)};
 }
 
 vector2D operator+(const vector2D& v1, const vector2D& v2)  {   return {v1.first+v2.first,v1.second+v2.second}; }
@@ -152,6 +153,14 @@ mat operator-(const mat& m, T val)    {
             col = col+val;
     }
     return op;
+}
+
+void showMatrix(mat& m) {
+    for (auto row : m)  {
+        cout<<endl;
+        for(auto col:row)
+            cout<<col<<" ";
+    }
 }
 
 // Matrix and vector2d operations

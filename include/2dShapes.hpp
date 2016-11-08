@@ -34,7 +34,8 @@ struct line {
 
 class shape  {
 public:
-    virtual double isPointIn(const vector2D&) = 0;
+    //virtual double distanceFromPoint(const vector2D&);
+    virtual bool isPointIn(const vector2D&) = 0;
 };
 
 //This data structure defines a plane
@@ -44,7 +45,7 @@ public:
     plane() = delete;
     /*The edges need to be declared anti-clock wise*/
     plane(line& l);
-    double isPointIn(const vector2D&);
+    bool isPointIn(const vector2D&);
 };
 
 //This data structure defines a polygon
@@ -55,7 +56,7 @@ public:
     convex() = delete;
     /*The edges need to be declared anti-clock wise*/
     convex(vector<vector2D>&);
-    double isPointIn(const vector2D&);
+    bool isPointIn(const vector2D&);
     double numSides;
 };
 
@@ -69,14 +70,14 @@ class circle: public shape    {
 public:
     circle() = delete;
     circle(vector2D p, double r) : center(p), radius(r) {};
-    double isPointIn(const vector2D&);
+    bool isPointIn(const vector2D&);
     friend void drawCircularShade(circle& c, cImage& img, RGB color);
     friend void drawCircle(circle& c, cImage& img, RGB color , bool antiAlias);
 };
 
 //This data structure defines a star
 class star: public convex    {
-    double isPointIn(const vector2D&);
+    bool isPointIn(const vector2D&);
 public:
     star(vector<vector2D>& v) : convex(v) {};
 };
@@ -85,14 +86,14 @@ public:
 class func: public shape    {
 public:
     func() {};
-    double isPointIn(const vector2D&);
+    bool isPointIn(const vector2D&);
 };
 
 class blob : public shape {
     vector<circle> circles;
 public:
     blob(vector<circle>& cir) : circles(cir) {};
-    double isPointIn(const vector2D&);
+    bool isPointIn(const vector2D&);
 };
 
 void drawLine(line &l,cImage& img, RGB color, bool antiAlias=false);

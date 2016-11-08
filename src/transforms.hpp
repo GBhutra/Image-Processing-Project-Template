@@ -20,7 +20,10 @@ mat shearMat(double x, double y);
 mat translationMat(double x, double y);
 mat perspectiveMat(double x, double y);
 
-cImage transform(cImage&, mat& m);
+void forwardTransform(cImage& inputImg, cImage& outImage, mat& m);
+void inverseTransform(cImage& inputImg, cImage& outImage, mat& m);
+void interestingTransform(cImage& inputImg, cImage& outImage);
+void bilinear(cImage& inputImg, cImage& outImage);
 
 
 #endif /* transforms_hpp */

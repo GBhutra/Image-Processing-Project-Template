@@ -41,7 +41,7 @@ mat operator+(const mat&, T);
 mat operator-(const mat&, const mat&);
 template<typename T>
 mat operator-(const mat&, T);
-
+void showMatrix(mat& m);
 
 // Matrix and vector2d operations
 mat makeMatrix(const vector2D& v);

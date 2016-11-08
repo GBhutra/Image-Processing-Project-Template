@@ -35,11 +35,14 @@ namespace COLORS {
     RGB ORANGE{255,165,0};
 }
 
+void project7(int argc, char* argv[]) {
+    
+}
+
 void project2(int argc, char* argv[]) {
     double w = 640,h=480;
     canvas = cImage(w,h,COLORS::YELLOW);
-
-    vector<vector2D> quad{{50,190},{400,30},{610,230},{320,450}};
+    vector<vector2D> quad{{256, 20},{420, 128},{375, 420},{128, 375},{100, 160}};
     vector<vector2D> pent{{200,200},{320,160},{420,200},{390,300},{260,300}};
     vector<circle> circ{circle({w/4,4*h/5},60),
                       circle({w/2,h/3},150),
@@ -66,9 +69,9 @@ void project2(int argc, char* argv[]) {
         exit(0);
     }
     
-    if (2<=argc)
-        if("-true"==string(argv[2]))
-        antiAlias = true;
+    if (2<argc)
+        if("true"==string(argv[2]))
+            antiAlias = true;
     
     if(4<=argc)
         if ("-output"==string(argv[3]))
@@ -105,7 +108,12 @@ void project2(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[])	{
-    project2(argc,argv);
+    cImage inp("/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/test3.pbm");
+    canvas = cImage(inp.getWidth(),inp.getHeight(),COLORS::BLACK);
+    mat tm = rotationMat(60);
+    //mat m{{1,0,50},{0,1,60},{0,0,1}};
+    inverseTransform(inp,canvas,tm);
+    //bilinear(inp,canvas);
     glutInit(&argc, argv);
     glutInitWindowPosition(0, 0); // Where the window will display on-screen.
     glutInitWindowSize(canvas.getWidth(), canvas.getHeight());

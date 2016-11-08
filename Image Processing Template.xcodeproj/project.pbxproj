@@ -32,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		4528AE0F1DBD24C6007AAFBB /* Image Processing Template */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Image Processing Template"; sourceTree = BUILT_PRODUCTS_DIR; };
+		45425C0B1DD162370022A670 /* Tony.ppm */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tony.ppm; sourceTree = "<group>"; };
 		4588FB151DBD4BEA00F6EC90 /* 2dShapes.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = 2dShapes.hpp; sourceTree = "<group>"; };
 		4588FB161DBD4BEA00F6EC90 /* filters.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = filters.hpp; sourceTree = "<group>"; };
 		4588FB181DBD4BEA00F6EC90 /* cImage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cImage.hpp; sourceTree = "<group>"; };
@@ -121,6 +122,7 @@
 		4588FB261DBD63C200F6EC90 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				45425C0B1DD162370022A670 /* Tony.ppm */,
 				45E83FFC1DC1C36800552DC9 /* AoU_Hulkbuster_0003.pbm */,
 				45E83FF21DC0CE7800552DC9 /* aa.pbm */,
 				45E83FF31DC0CE7800552DC9 /* cube.pbm */,

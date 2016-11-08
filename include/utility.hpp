@@ -11,13 +11,14 @@
 
 //constants
 const double PI = acos(-1);
-const double RAD = PI/180;
 const double numSubPixels = 3;
 
 #define MOD(x) ((x)<0?(-(x)):(x))
 #define POS(x) ((x)<0?(0):(x))
 #define MIN(x, y) ((x)<(y)?(x):(y))
 #define MAX(x, y) ((x)>(y)?(x):(y))
+#define DEGToRAD(x) (x*PI/180)
+#define RADToDEG(x) (x*180/PI)
 
 
 /*Debugging Definitions*/

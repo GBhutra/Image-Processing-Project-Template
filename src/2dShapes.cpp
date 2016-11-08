@@ -48,43 +48,43 @@ convex::convex(vector<vector2D>& vertices) {
     edges.push_back(l);
 }
 
-double circle::isPointIn(const vector2D& p)   {
-    return (radius-magnitude(center-p));
+bool circle::isPointIn(const vector2D& p)   {
+    return (radius-magnitude(center-p) > 0 ? true : false);
 }
 
-double convex::isPointIn(const vector2D& p)  {
+bool convex::isPointIn(const vector2D& p)  {
     int count=0;
     for (auto edge : edges) {
         if (0<edge.isPointIn(p))
             count++;
     }
     if (0==count)
-        return 5;
+        return true;
     else
-        return -5;
+        return false;
 }
 
-double star::isPointIn(const vector2D& p)  {
+bool star::isPointIn(const vector2D& p)  {
     int count=0;
     for (auto edge : edges) {
         if (0<edge.isPointIn(p))
             count++;
     }
     if (1<count)
-        return -5;
+        return false;
     else
-        return 0;
+        return true;
 }
 
-double func::isPointIn(const vector2D& p)    {
+bool func::isPointIn(const vector2D& p)    {
    // y=50e^(-(x-250)/100)sin((x-250)/10)+250
     if (5>(p.second-(60*exp((250-p.first)/200)*sin((p.first-250)/10))-250))
-        return 5;
+        return true;
     else
-        return -5;
+        return false;
 }
 
-double blob::isPointIn(const vector2D& p)   {
+bool blob::isPointIn(const vector2D& p)   {
     double alpha = 0.4e-4;
     double res = 0;
     for (auto c : circles)  {
@@ -93,7 +93,7 @@ double blob::isPointIn(const vector2D& p)   {
         res += exp( -alpha * ( (dx*dx + dy*dy) - c.radius ) );
     }
     res = 1/alpha * log(res);
-    return res;
+    return (res > 0 ? true : false);
 }
 
 void drawShape(shape& poly, cImage& img, RGB color, bool antiAlias)   {
@@ -101,6 +101,39 @@ void drawShape(shape& poly, cImage& img, RGB color, bool antiAlias)   {
     RGB col;
     for (int i=0;i<img.getWidth();i++)  {
         for(int j=0;j<img.getHeight();j++)  {
+            if (!poly.isPointIn({i,j}))    {
+                if (antiAlias)  {
+                    in = 0;
+                    for(double X=0;X<1;X+=(1/numSubPixels)) {
+                        for(double Y=0;Y<1;Y+=(1/numSubPixels)) {
+                            if (poly.isPointIn({X+i,Y+j}))    {
+                                in+=(1/(numSubPixels*numSubPixels));
+                            }
+                        }
+                    }
+                    if (0<in)   {
+                        auto p = img.getPixelAtXY(i, j);
+                        r = double(get<0>(color)*in)+(p.getRed()*(1-in));
+                        g = double(get<1>(color)*in)+(p.getGreen()*(1-in));
+                        b = double(get<2>(color)*in)+(p.getBlue()*(1-in));
+                        col=make_tuple(static_cast<int>(r),static_cast<int>(g),static_cast<int>(b));
+                        img.setPixelAtXY(i, j, col);
+                    }
+                }
+            }
+            else if (poly.isPointIn({i,j}))
+               img.setPixelAtXY(i, j, color);
+        }
+    }
+}
+
+/*
+void drawShapeAA2(shape& poly, cImage& img, RGB color, bool antiAlias)   {
+    double in=0,r,g,b;
+    RGB col;
+    for (int i=0;i<img.getWidth();i++)  {
+        for(int j=0;j<img.getHeight();j++)  {
+            if (poly.isPointIn({))
             if (-2>poly.isPointIn({i,j}) && 0>=poly.isPointIn({i,j}))    {
                 if (antiAlias)  {
                     in = 0;
@@ -122,10 +155,12 @@ void drawShape(shape& poly, cImage& img, RGB color, bool antiAlias)   {
                 }
             }
             else if (0<=poly.isPointIn({i,j}))
-               img.setPixelAtXY(i, j, color);
+                img.setPixelAtXY(i, j, color);
         }
     }
 }
+ */
+
 
 void drawCircularShade(circle& c, cImage& img, RGB color)   {
     double in=0,r,g,b;
