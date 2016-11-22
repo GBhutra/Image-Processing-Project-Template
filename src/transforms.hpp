@@ -23,7 +23,7 @@ mat perspectiveMat(double x, double y);
 void forwardTransform(cImage& inputImg, cImage& outImage, mat& m);
 void inverseTransform(cImage& inputImg, cImage& outImage, mat& m);
 void interestingTransform(cImage& inputImg, cImage& outImage);
-void bilinear(cImage& inputImg, cImage& outImage);
+void bilinearWarp(cImage& inputImg, cImage& outImage, vector<vector2D>&);
 
 
 #endif /* transforms_hpp */

@@ -28,9 +28,9 @@ namespace globalFilter {
         int rMin=255,rMax=0;
         int gMin=255,gMax=0;
         int bMin=255,bMax=0;
-        cPixel p;
-        for (int x=0;x<inputImg.getHeight();++x) {
-            for (int y=0;y<inputImg.getWidth();y++) {
+        cPixel<RGB> p(RGB{0,0,0});
+        for (int x=0;x<inputImg.getWidth();++x) {
+            for (int y=0;y<inputImg.getHeight();y++) {
                 p = inputImg.getPixelAtXY(x,y);
                 rMax = p.getRed()   > rMax ? p.getRed()     : rMax;
                 gMax = p.getGreen() > gMax ? p.getGreen()   : gMax;
@@ -44,8 +44,8 @@ namespace globalFilter {
         int rDiff = rMax-rMin;
         int gDiff = gMax-gMin;
         int bDiff = bMax-bMin;
-        for (int x=0;x<inputImg.getHeight();++x) {
-            for (int y=0;y<inputImg.getWidth();y++) {
+        for (int x=0;x<inputImg.getWidth();++x) {
+            for (int y=0;y<inputImg.getHeight();y++) {
                 p = inputImg.getPixelAtXY(x,y);
                 r = p.getRed();
                 g = p.getGreen();
@@ -61,6 +61,19 @@ namespace globalFilter {
 }
 
 namespace localFilter {
+    void normalizeImg(cImage& inputImg, cImage& outImg)   {
+        short color=0;
+        for (int x=0;x<inputImg.getWidth();++x) {
+            for (int y=0;y<inputImg.getHeight();y++) {
+                cPixel<RGB> p = inputImg.getPixelAtXY(x, y);
+                color+=p.getRed();
+                color+=p.getBlue();
+                color+=p.getGreen();
+                color = color/3;
+                outImg.setPixelAtXY(x, y, RGB{color,color,color});
+            }
+        }
+    }
     void applyConvolutionFilter(cImage& inputImg, cImage& outImg, kernel k, bool normalizedKernel = false)   {
         if (0==k.size() || 0==(k.size()%2))
             return;
@@ -82,7 +95,7 @@ namespace localFilter {
                 }
             }
         }
-        cPixel p;
+        cPixel<RGB> p(RGB{0,0,0});
         double rSum=0,gSum=0,bSum=0;
         for (int x=0;x<inputImg.getWidth();x++) {
             for (int y=0;y<inputImg.getHeight();y++) {
@@ -93,7 +106,7 @@ namespace localFilter {
                         int w = x-(k.size()%2)+i;
                         int h = y-(k[0].size()%2)+j;
                         if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
-                            cPixel pTemp = inputImg.getPixelAtXY(w,w);
+                            cPixel<RGB> pTemp = inputImg.getPixelAtXY(w,h);
                             rSum+=pTemp.getRed()*k[i][j];
                             bSum+=pTemp.getBlue()*k[i][j];;
                             gSum+=pTemp.getGreen()*k[i][j];;
@@ -127,7 +140,7 @@ namespace localFilter {
                 }
             }
         }
-        cPixel p;
+        cPixel<RGB> p(RGB{0,0,0});
         double rSum=0,gSum=0,bSum=0;
         p = inputImg.getPixelAtXY(x, y);
         rSum=0,gSum=0,bSum=0;
@@ -136,7 +149,7 @@ namespace localFilter {
                 int w = x-(k.size()%2)+i;
                 int h = y-(k[0].size()%2)+j;
                 if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
-                    cPixel pTemp = inputImg.getPixelAtXY(w,w);
+                    cPixel<RGB> pTemp = inputImg.getPixelAtXY(w,w);
                     rSum+=pTemp.getRed()*k[i][j];
                     bSum+=pTemp.getBlue()*k[i][j];;
                     gSum+=pTemp.getGreen()*k[i][j];;
@@ -147,38 +160,52 @@ namespace localFilter {
         outImg.setPixelAtXY(x, y,col);
     }
     
-    void motionBlur(cImage& inputImg, cImage& outImg, cImage& controlImg)   {
-        HSV pix;
-        for (int w=0;w<inputImg.getWidth();w++) {
-            for (int h=0;h<inputImg.getHeight();h++)    {
-                pix = controlImg.getPixelAtXY(w, h).toHSV();
-                double flen = 3+(get<1>(pix)*7)+(get<2>(pix)*7);
-                if(flen<3)  flen=3;
-                double ang = get<0>(pix);
-                double cang = cos(ang/(2*PI));
-                double sang = sin(ang/(2*PI));
-                vector2D p2{(flen/2)*cang, (flen/2)*sang};
-                vector2D p1{-p2.first, -p2.second};
-                double fsize = 2*(abs(p2.first)>abs(p2.second)?abs(p2.first):abs(p2.second));
-                if(fsize<0) fsize = -fsize;
-                    kernel k(static_cast<int>(fsize+1+0.5), vector<double>(static_cast<int>(fsize+1+0.5),0));
-                int line_pts = magnitude(p2-p1)/0.7;
-                vector2D slope = (p2-p1);
-                slope.first = slope.first/line_pts;
-                slope.second = slope.second;
-                vector2D curr = p1;
-                for(int i=0;i<line_pts;i++){
-                    k[static_cast<int>(curr.first+k.size()/2)][static_cast<int>(curr.second)+k.size()/2]=1;
-                    curr+=slope;
+    void motionBlur(cImage& inputImg, cImage& outImg, cImage& coImg, int kSize)   {
+        int rSum,bSum,gSum;
+        cPixel<RGB> p(RGB{0,0,0});
+        kernel k(2*kSize+1,vector<double>(2*kSize+1,0));
+        for (int x=0;x<inputImg.getWidth();++x) {
+            for (int y=0;y<inputImg.getHeight();++y) {
+                double grayScale = 0;
+                for (int i=0;i<k.size();i++) {
+                    for (int j=0;j<k[i].size();j++) {
+                        int h = x-(k.size()%2)+i;
+                        int w = y-(k[0].size()%2)+j;
+                        if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
+                            cPixel<RGB> pTemp = coImg.getPixelAtXY(w,h);
+                            double GS = pTemp.getRed() + pTemp.getGreen() + pTemp.getBlue();
+                            GS = GS/765;
+                            k[i][j] = GS;
+                            grayScale += GS;
+                        }
+                    }
                 }
-                applyConvolutionFilter(inputImg,outImg,k,w,h,false);
+                rSum=bSum=gSum=0;
+                for (int i=0;i<k.size();i++) {
+                    for (int j=0;j<k[0].size();j++) {
+                        int w = x-(k.size()%2)+i;
+                        int h = y-(k[0].size()%2)+j;
+                        if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
+                            cPixel<RGB> pTemp = inputImg.getPixelAtXY(w,h);
+                            rSum+=pTemp.getRed()*(k[i][j]/grayScale);
+                            bSum+=pTemp.getBlue()*(k[i][j]/grayScale);;
+                            gSum+=pTemp.getGreen()*(k[i][j]/grayScale);;
+                        }
+                    }
+                }
+                rSum = rSum > 255 ? 255 : rSum;
+                gSum = gSum > 255 ? 255 : gSum;
+                bSum = bSum > 255 ? 255 : bSum;
+                RGB col = {static_cast<int>(rSum),static_cast<int>(gSum),static_cast<int>(bSum)};
+                outImg.setPixelAtXY(x, y,col);
             }
         }
     }
     
+    
     void boxBlur(cImage& inputImg, cImage& outImg, int kSize)   {
         kernel k(2*kSize+1,vector<double>(2*kSize+1,1));
-        applyConvolutionFilter(inputImg,outImg,k);
+        localFilter::applyConvolutionFilter(inputImg,outImg,k);
     }
 
     void gussianBlur(cImage& inputImg, cImage& outImg, int kSize)   {
@@ -192,7 +219,7 @@ namespace localFilter {
                 k[row][col] = x;
             }
         }
-        applyConvolutionFilter(inputImg,outImg,k);
+        localFilter::applyConvolutionFilter(inputImg,outImg,k);
     }
     
     void derivativeFilter(cImage& inputImg, cImage& outImg, int kSize)   {
@@ -223,14 +250,14 @@ namespace localFilter {
             cout<<endl;
         }
         cImage temp(inputImg.getWidth(), inputImg.getHeight());
-        applyConvolutionFilter(inputImg, temp, k,true);
+        localFilter::applyConvolutionFilter(inputImg, temp, k,true);
         globalFilter::normalizeImg(temp,outImg);
     }
     
     void erosionFilter(cImage& inputImg, cImage& outImg, int kSize)   {
         kernel k(2*kSize+1,vector<double>(2*kSize+1,1));
         int rMin=255,bMin=255,gMin=255;
-        cPixel p;
+        cPixel<RGB> p(RGB{0,0,0});
         for (int x=0;x<inputImg.getWidth();x++) {
             for (int y=0;y<inputImg.getHeight();y++) {
                 rMin=bMin=gMin=255;
@@ -251,47 +278,33 @@ namespace localFilter {
             }
         }
     }
-    void erosionFilter(cImage& inputImg, cImage& outImg, cImage& contImg)   {
-        int crMax,cgMax,cbMax,rMax,bMax,gMax;
-        crMax=cgMax=cbMax=rMax=bMax=gMax=255;
-        cPixel p,c;
-        for (int x=0;x<contImg.getWidth();x++) {
-            for (int y=0;y<contImg.getHeight();y++) {
-                p = contImg.getPixelAtXY(x,y);
-                crMax = p.getRed() < crMax ? p.getRed():crMax;
-                cgMax = p.getGreen() < cgMax ? p.getGreen():cgMax;
-                cbMax = p.getBlue() < cbMax ? p.getBlue():cbMax;
-            }
-        }
-        
-        for (int x=0;x<inputImg.getWidth();x++) {
-            for (int y=0;y<inputImg.getHeight();y++) {
-                rMax=bMax=gMax=255;
-                int stx = x-(contImg.getWidth()/2);
-                int sty = y-(contImg.getHeight()/2);
-                for (int i=0;i<contImg.getWidth();i++) {
-                    for (int j=0;j<contImg.getHeight();j++) {
-                        int w = stx+i;
-                        int h = sty+j;
+    void erosionFilter(cImage& inputImg, cImage& outImg, cImage& coImg, int kSize)   {
+        int rMin=255,bMin=255,gMin=255;
+        cPixel<RGB> p(RGB{0,0,0});
+        for (int x=0;x<inputImg.getWidth();++x) {
+            for (int y=0;y<inputImg.getHeight();++y) {
+                rMin=bMin=gMin=255;
+                for (int i=0;i<(2*kSize+1);i++) {
+                    for (int j=0;j<(2*kSize+1);j++) {
+                        int w = x-kSize+i;
+                        int h = y-kSize+j;
                         if (0<=w && inputImg.getWidth()>w && 0<=h && inputImg.getHeight()>h)    {
-                            c = contImg.getPixelAtXY(i,j);
-                            p = inputImg.getPixelAtXY(w,h);
-                            rMax = rMax < c.getRed()*p.getRed() ? rMax : c.getRed()*p.getRed();
-                            gMax = gMax < c.getGreen()*p.getGreen() ? gMax : c.getGreen()*p.getGreen();
-                            bMax = bMax < c.getBlue()*p.getBlue() ? bMax : c.getBlue()*p.getBlue();
+                            p = coImg.getPixelAtXY(w, h);
+                            rMin = rMin > p.getRed()     ?   p.getRed()  :   rMin;
+                            gMin = gMin > p.getGreen()   ?   p.getGreen():   gMin;
+                            bMin = bMin > p.getBlue()    ?   p.getBlue() :   bMin;
                         }
                     }
-                    RGB col {crMax==0 ? 255: rMax/crMax, cgMax==0 ? 255: gMax/cgMax, cbMax==0 ? 255: bMax/cbMax};
-                    outImg.setPixelAtXY(x, y, col);
                 }
+                RGB col = {rMin,gMin,bMin};
+                outImg.setPixelAtXY(x, y, col);
             }
         }
     }
-    
     void dilationFilter(cImage& inputImg, cImage& outImg, int kSize)   {
         kernel k(2*kSize+1,vector<double>(2*kSize+1,1));
         int rMax=255,bMax=255,gMax=255;
-        cPixel p;
+        cPixel<RGB> p(RGB{0,0,0});
         for (int x=0;x<inputImg.getWidth();x++) {
             for (int y=0;y<inputImg.getHeight();y++) {
                 rMax=bMax=gMax=0;
@@ -315,7 +328,7 @@ namespace localFilter {
     void dilationFilter(cImage& inputImg, cImage& outImg, cImage& contImg)   {
         int crMax,cgMax,cbMax,rMax,bMax,gMax;
         crMax=cgMax=cbMax=rMax=bMax=gMax=0;
-        cPixel p,c;
+        cPixel<RGB> p(RGB{0,0,0}),c(RGB{0,0,0});
         for (int x=0;x<contImg.getWidth();x++) {
             for (int y=0;y<contImg.getHeight();y++) {
                 p = contImg.getPixelAtXY(x,y);

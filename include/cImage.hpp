@@ -21,14 +21,14 @@
 class cImage	{
 protected:
     int iHeight, iWidth, iNumChannels;
-	vector<vector<cPixel>>cPixMap;
+	vector<vector<cPixel<RGB>>>cPixMap;
 public:
 	cImage(): iWidth(0), iHeight(0)	{};
 	cImage(int x, int y): iWidth(x), iHeight(y)	{
-		cPixMap.resize(iWidth,vector<cPixel>(iHeight,cPixel(0,0,0)));
+        cPixMap.resize(iWidth,vector<cPixel<RGB>>(iHeight,cPixel<RGB>(RGB{0,0,0})));
 	};
     cImage(int x, int y, RGB color): iWidth(x), iHeight(y)	{
-        cPixMap.resize(iWidth,vector<cPixel>(iHeight,cPixel(get<0>(color),get<1>(color),get<2>(color))));
+        cPixMap.resize(iWidth,vector<cPixel<RGB>>(iHeight,cPixel<RGB>(color)));
     };
     cImage(int x, int y, RGB color1, RGB color2);
 	cImage(string);
@@ -36,11 +36,13 @@ public:
 	//getter and setters
     int getHeight()  {       return iHeight;	};
     int getWidth()   {       return iWidth;	};
-	cPixel getPixelAtXY(int x,int y);
+	cPixel<RGB> getPixelAtXY(int x,int y);
 
 	void readPPMFile(string filename);
 	void setPixelAtXY(int x,int y, RGB color);
-    void setPixelAtXY(int x,int y, cPixel);
+    void setPixelAtXY(int x,int y, cPixel<RGB>);
+    void setPixelAtXY(int x,int y, cPixel<HSV>);
+    
 	void writeToPPMFile(string filename);
     friend void imgToArray(cImage& img, char* ptr);
 };

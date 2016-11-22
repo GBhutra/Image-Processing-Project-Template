@@ -30,13 +30,11 @@ static void windowResize(int w, int h)  {
 static void windowDisplay(void)	{
     char *arr = new char[canvas.getWidth()*canvas.getHeight()*3];
     imgToArray(canvas,arr);
-    int w = canvas.getWidth();
-    int h = canvas.getHeight();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glRasterPos2i(0,0);
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE,arr);
+    glDrawPixels(canvas.getWidth(), canvas.getHeight(), GL_RGB, GL_UNSIGNED_BYTE,arr);
     glFlush();
     glutSwapBuffers();
 }

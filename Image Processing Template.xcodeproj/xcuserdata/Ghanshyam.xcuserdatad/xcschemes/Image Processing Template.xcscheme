@@ -63,15 +63,14 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "st"
+            argument = "-input  /Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/im1_500x500.ppm"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "true"
-            isEnabled = "NO">
+            argument = "-dither FS"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "here.ppm"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

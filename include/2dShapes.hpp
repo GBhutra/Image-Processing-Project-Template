@@ -14,28 +14,30 @@
 #include <cstdlib>
 #include <ctime>
 #include <cstdarg>
+#include "cPixel.hpp"
 #include "utility.hpp"
 #include "cVector2d.hpp"
 #include "cImage.hpp"
 
+using namespace VECTOR;
 // This data structure defines a line
 struct line {
     //normal vector
-    vector2D normalUnitVector;
+    vec2D normalUnitVector;
     double distFromOrigin;
     
     line() = delete;
     //Line from 2 points
-    line(const vector2D&, const vector2D&);
+    line(const vec2D&, const vec2D&);
     
-    double isPointIn(const vector2D&);
+    double isPointIn(const vec2D&);
 };
 
 
 class shape  {
 public:
-    //virtual double distanceFromPoint(const vector2D&);
-    virtual bool isPointIn(const vector2D&) = 0;
+    //virtual double distanceFromPoint(const vec2D&);
+    virtual bool isPointIn(const vec2D&) = 0;
 };
 
 //This data structure defines a plane
@@ -45,7 +47,7 @@ public:
     plane() = delete;
     /*The edges need to be declared anti-clock wise*/
     plane(line& l);
-    bool isPointIn(const vector2D&);
+    bool isPointIn(const vec2D&);
 };
 
 //This data structure defines a polygon
@@ -55,8 +57,8 @@ protected:
 public:
     convex() = delete;
     /*The edges need to be declared anti-clock wise*/
-    convex(vector<vector2D>&);
-    bool isPointIn(const vector2D&);
+    convex(vector<vec2D>&);
+    bool isPointIn(const vec2D&);
     double numSides;
 };
 
@@ -65,35 +67,35 @@ class blob;
 //This data structure defines a circle
 class circle: public shape    {
     friend blob;
-    vector2D center;
+    vec2D center;
     double radius;
 public:
     circle() = delete;
-    circle(vector2D p, double r) : center(p), radius(r) {};
-    bool isPointIn(const vector2D&);
+    circle(vec2D p, double r) : center(p), radius(r) {};
+    bool isPointIn(const vec2D&);
     friend void drawCircularShade(circle& c, cImage& img, RGB color);
     friend void drawCircle(circle& c, cImage& img, RGB color , bool antiAlias);
 };
 
 //This data structure defines a star
 class star: public convex    {
-    bool isPointIn(const vector2D&);
+    bool isPointIn(const vec2D&);
 public:
-    star(vector<vector2D>& v) : convex(v) {};
+    star(vector<vec2D>& v) : convex(v) {};
 };
 
 //This data structure defines a decaying sin function
 class func: public shape    {
 public:
     func() {};
-    bool isPointIn(const vector2D&);
+    bool isPointIn(const vec2D&);
 };
 
 class blob : public shape {
     vector<circle> circles;
 public:
     blob(vector<circle>& cir) : circles(cir) {};
-    bool isPointIn(const vector2D&);
+    bool isPointIn(const vec2D&);
 };
 
 void drawLine(line &l,cImage& img, RGB color, bool antiAlias=false);

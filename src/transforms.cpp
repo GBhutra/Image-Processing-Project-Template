@@ -10,24 +10,20 @@
 
 mat rotationMat(double ang) {
     ang = DEGToRAD(ang);
-    mat op(3,vector<double>(3,0));
+    mat op=identityMat(3);
     op[0][0] = cos(ang);
     op[0][1] = sin(ang);
     op[1][0] = -sin(ang);
     op[1][1] = cos(ang);
-    op[2][2] = 1;
     return op;
 }
 mat scalingMat(double x, double y);
 
 mat shearMat(double x, double y);
 mat translationMat(double x, double y)  {
-    mat op(3,vector<double>(3,0));
-    op[0][0] = 1;
+    mat op=identityMat(3);
     op[0][2] = x;
-    op[1][1] = 1;
     op[1][2] = y;
-    op[2][2] = 1;
     return op;
 }
 mat perspectiveMat(double x, double y);
@@ -67,70 +63,48 @@ void inverseTransform (cImage& inputImg, cImage& outImage, mat& mF)  {
 
 
 
-void bilinear(cImage& inputImg, cImage& outImage)   {
-    vector2D p0{70, 100};
-    vector2D p1{900, 50};
-    vector2D p2{320, 500};
-    vector2D p3{720, 600};
-    //p0(70, 100), p1(900, 50), p2(320, 500), p3(720, 600).
+void bilinearWarp(cImage& inputImg, cImage& outImage, vector<vector2D>& p)   {
+    double a0 = p[0].first; // zero
+    double a1 = p[3].first - p[0].first; // width
+    double a2 = p[1].first - p[0].first; // zero
+    double a3 = p[2].first - p[1].first - p[3].first + p[0].first; // 0
     
-    double a0 = p0.first; // zero
-    double a1 = p3.first - p0.first; // width
-    double a2 = p1.first - p0.first; // zero
-    double a3 = p2.first - p1.first - p3.first + p0.first; // 0
-    
-    double b0 = p0.second; // <zero
-    double b1 = p3.second - p0.second; // 0
-    double b2 = p1.second - p0.second; // height
-    double b3 = p2.second - p1.second - p3.second + p0.second; //0
-    
+    double b0 = p[0].second; // <zero
+    double b1 = p[3].second - p[0].second; // 0
+    double b2 = p[1].second - p[0].second; // height
+    double b3 = p[2].second - p[1].second - p[3].second + p[0].second; //0
     
     int numSamples = 20;
-    double u, v, xf, yf;
+    double xf, yf;
     
-    for(int y = 0; y < inputImg.getHeight(); y++) {
-        for(int x = 0; x < inputImg.getWidth(); x++) {
+    for(int y = 0; y < outImage.getHeight(); y++) {
+        for(int x = 0; x < outImage.getWidth(); x++) {
             vector<double> totalColors(3,0);
             for (int sample = 0; sample < numSamples; sample++) {
                 xf = 1.0*(x+(1.0*rand()/RAND_MAX));
                 yf = 1.0*(y+(1.0*rand()/RAND_MAX));
+
                 float c0 = a1*(b0-yf)+b1*(xf-a0); // width*-y
                 float c1 = a3*(b0-yf)+b3*(xf-a0)+a1*b2-a2*b1; // width*height
                 float c2 = a3*b2 - a2*b3; // zero
-                if(fabs(c2) <= 0.001){
-                    v = (a1 * yf - a1 * b0 - b1 * xf + a0 * b1) / (a1 * b2 - a2 * b1);
-                    u = (xf - a0 - a2 * v) / a1;
+            
+                double t1 = -c1/(2*c2);
+                double t2 = (sqrt(c1*c1-4*c2*c0))/(2*c2);
+                
+                double v = t1+t2;
+                if(v>1 || v<0)
+                    v = t1-t2;
+                double u = (xf-a0-a2*v)/(a1+a3*v);
+                
+                int V = static_cast<int>(v*inputImg.getHeight());
+                int U = static_cast<int>(u*inputImg.getWidth());
+                
+                if (0<=U && inputImg.getWidth()>U && 0<=V && inputImg.getHeight()>V)    {
+                    auto p = inputImg.getPixelAtXY(U, V);
+                    totalColors[0] += p.getRed();
+                    totalColors[1] += p.getGreen();
+                    totalColors[2] += p.getBlue();
                 }
-                else {
-                    float discriminant = sqrt(c1*c1-4.0*c2*c0); // width*height
-                    if (c1*c1-4.0*c2*c0 < 0){discriminant = 0;}
-                    v = (-c1+discriminant)/(2.0*c2); // 0
-                    
-                    if(v < 0.0 || v > 1.0){
-                        v =(-c1 - discriminant) / (2.0 * c2);
-                        u = (xf - a0 - a2 * v) / (a1 + a3 * v);
-                    }
-                    else{
-                        u = (xf - a0 - a2 * v) / (a1 + a3 * v);
-                        if(u < 0.0 || u > 1.0){
-                            v =(-c1 - discriminant) / (2.0 * c2);
-                            u = (xf - a0 - a2 * v) / (a1 + a3 * v);
-                        }
-                    }
-                }
-                
-                v = v * (inputImg.getHeight() - 1);
-                u = u * inputImg.getWidth();
-                
-                u = 0 > u ? -u : u;
-                
-                int V = (static_cast<int>(v) + inputImg.getHeight()) % inputImg.getHeight();
-                int U = (static_cast<int>(u) + inputImg.getWidth()) % inputImg.getWidth();
-                
-                auto p = inputImg.getPixelAtXY(U, V);
-                totalColors[0] += p.getRed();
-                totalColors[1] += p.getGreen();
-                totalColors[2] += p.getBlue();
             }
             RGB col{
                 static_cast<int>(totalColors[0]/numSamples),
@@ -143,5 +117,22 @@ void bilinear(cImage& inputImg, cImage& outImage)   {
 }
 
 void interestingTransform(cImage& inputImg, cImage& outImage)    {
-    
+    double freq = 5;
+    double amp = 1;
+    mat m=identityMat(3);
+    for(int i=0;i<outImage.getWidth();i++)  {
+        for(int j=0;j<outImage.getHeight();j++) {
+            mat m=identityMat(3);
+            mat destPos{{static_cast<double>(i)},{static_cast<double>(j)},{1}};
+            m[0][0] = sin((2*PI/freq)*i);
+            m[1][1] = sin((2*PI/freq)*j);
+            mat initialPos = m*destPos;
+            if (0<=initialPos[0][0] && inputImg.getWidth()>initialPos[0][0])    {
+                if (0<=initialPos[1][0] && inputImg.getHeight()>initialPos[1][0])    {
+                    auto p = inputImg.getPixelAtXY(static_cast<int>(initialPos[0][0]),static_cast<int>(initialPos[1][0]));
+                    outImage.setPixelAtXY(i,j,p);
+                }
+            }
+        }
+    }
 }

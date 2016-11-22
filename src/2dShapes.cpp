@@ -30,8 +30,8 @@ void drawLine(line &l,cImage& img, RGB color, bool antiAlias)   {
             if (antiAlias)  {
                 auto tp = img.getPixelAtXY(i, j+1);
                 auto bp = img.getPixelAtXY(i, j-1);
-                RGB colT{static_cast<int>((tp.getRed()*t)+(get<0>(color)*(1-t))),static_cast<int>((tp.getGreen()*t)+(get<1>(color)*(1-t))),static_cast<int>((tp.getBlue()*t)+(get<2>(color)*(1-t)))};
-                RGB colB{static_cast<int>((bp.getRed()*b)+(get<0>(color)*(1-b))),static_cast<int>((bp.getGreen()*b)+(get<1>(color)*(1-b))),static_cast<int>((bp.getBlue()*b)+(get<2>(color)*(1-b)))};
+                RGB colT{static_cast<short>((tp.getRed()*t)+(get<0>(color)*(1-t))),static_cast<short>((tp.getGreen()*t)+(get<1>(color)*(1-t))),static_cast<short>((tp.getBlue()*t)+(get<2>(color)*(1-t)))};
+                RGB colB{static_cast<short>((bp.getRed()*b)+(get<0>(color)*(1-b))),static_cast<short>((bp.getGreen()*b)+(get<1>(color)*(1-b))),static_cast<short>((bp.getBlue()*b)+(get<2>(color)*(1-b)))};
                 img.setPixelAtXY(i, j+1, colT);
                 img.setPixelAtXY(i, j-1, colB);
             }

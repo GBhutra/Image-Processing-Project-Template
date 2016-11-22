@@ -10,45 +10,95 @@
 #define cPixel_hpp
 
 #include <iostream>
-#include <tuple>
+#include "utility.hpp"
 
 using namespace std;
 
-#define maximum(x, y, z) ((x) > (y)? ((x) > (z)? (x) : (z)) : ((y) > (z)? (y) : (z)))
-#define minimum(x, y, z) ((x) < (y)? ((x) < (z)? (x) : (z)) : ((y) < (z)? (y) : (z)))
+RGB operator+(RGB& lhs, RGB& rhs);
+RGB operator-(RGB& lhs, RGB& rhs);
+HSV operator+(HSV& lhs, RGB& HSV);
+HSV operator-(HSV& lhs, RGB& HSV);
 
-typedef tuple<uint8_t,uint8_t,uint8_t>RGB;
-typedef tuple<double, double, double>HSV;
-
-
+template<typename COLORTYPE>
 class cPixel	{
-    RGB color;
+    COLORTYPE val;
 public:
     // constructors
-    cPixel() : color({0,0,0}) {};
-    cPixel(uint8_t x, uint8_t y, uint8_t z) : color({x,y,z}) {};
-    
-    //assignment operator overload
-    void operator=(const cPixel& rhs);
+    cPixel() = delete;
+    cPixel(RGB col) : val(col) {};
+    cPixel(HSV col) : val(col) {};
+    cPixel(GS col) : val(col) {};
+
+    COLORTYPE getColor() {
+        return val;
+    };
     
     //getters and setters
-    inline uint8_t getRed()	{	return get<0>(color);	};
-    inline uint8_t getGreen()	{	return get<1>(color);	};
-    inline uint8_t getBlue()	{	return get<2>(color);	};
-    inline RGB getColor()    {   return color;         };
-    inline void setRed(uint8_t r) {	get<0>(color) = r;	};
-    inline void setGreen(uint8_t g) {	get<1>(color) = g;	};
-    inline void setBlue(uint8_t b) {	get<2>(color) = b;	};
+    short getRed();
+    short getGreen();
+    short getBlue();
+    
+    short getHue();
+    double getSat();
+    double getVal();
+    
+    short getGray();
+    
+    void setRed(short);
+    void setGreen(short);
+    void setBlue(short);
+    void setHue(short);
+    void setSat(double);
+    void setVal(double);
     
     //function that returns the HSV value of the pixel
-    HSV toHSV();
-    
-    //arithmetic operator overload
-    friend cPixel operator+(const cPixel& lhs, const cPixel& rhs);
-    friend cPixel operator-(const cPixel& lhs, const cPixel& rhs);
+    cPixel<HSV> toHSV();
+    cPixel<RGB> toRGB();
 };
 
-RGB HSVtoRGB(HSV pixel);
+
+auto RGBtoInt=[](RGB col)   {
+    int res = 0;
+    int r = get<0>(col) << 16;
+    int g = get<1>(col) << 8;
+    int b = get<2>(col);
+    res = r | g | b;
+    return res;
+};
+
+auto IntToRGB=[](int col)   {
+    RGB res;
+    int mask = 0x000000FF;
+    get<2>(res) = col & mask;
+    get<1>(res) = (col & mask<<8)>>8;
+    get<0>(res) = (col & mask<<16)>>16;
+    return res;
+};
+
+auto clamp=[](RGB col) {
+    short r,g,b;
+    if (0>get<0>(col))
+        r=0;
+    else if (255<get<0>(col))
+        r=255;
+    else
+        r = get<0>(col);
+    if (0>get<1>(col))
+        g=0;
+    else if (255<get<1>(col))
+        g=255;
+    else
+        g = get<1>(col);
+    if (0>get<2>(col))
+        b=0;
+    else if (255<get<2>(col))
+        b=255;
+    else
+        b = get<2>(col);
+    return RGB{r,g,b};
+};
+
 RGB compose(RGB, RGB,double);
+
 
 #endif /* cPixel_hpp */
