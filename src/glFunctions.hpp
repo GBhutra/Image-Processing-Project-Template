@@ -13,8 +13,12 @@
 #include <GL/glut.h>
 #endif
 #include "cImage.hpp"
+#include "stich-carving.hpp"
+#include <vector>
 
 cImage canvas;
+std::vector<cImage> frames;
+int frameIndex=0;
 
 static void init(void)  {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f ); //Set Background Color
@@ -46,5 +50,17 @@ static void processMouse(int button, int state, int x, int y) {
 // Keyboard press callback
 void processKeyBoard(unsigned char key, int x, int y)	/* called on key press */	{
     std::cout<<"Keyboard Key pressed : "<<key<<std::endl;
+    if ('f'==key)   {
+        if (frameIndex==frames.size())
+            frameIndex = 0;
+        canvas = frames[frameIndex];
+        frameIndex++;
+    }
+    if ('b'==key)   {
+        if (0==frameIndex)
+            frameIndex = frames.size()-1;
+        canvas = frames[frameIndex];
+        frameIndex--;
+    }
     glutPostRedisplay();
 }

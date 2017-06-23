@@ -21,22 +21,22 @@ namespace compositing {
     RGB BLACK{0,0,0};
     RGB GRAY{128,128,128};
     
-    auto max = [](cPixel& a, cPixel& b) { return RGB{
+    auto max = [](cPixel<RGB>& a, cPixel<RGB>& b) { return RGB{
         (a.getRed()     > b.getRed()    ? a.getRed() : b.getRed()),
         (a.getGreen()   > b.getGreen()  ? a.getGreen() : b.getGreen()),
         (a.getBlue()    > b.getBlue()   ? a.getBlue() : b.getBlue())};
     };
-    auto min = [](cPixel& a, cPixel& b) { return RGB {
+    auto min = [](cPixel<RGB>& a, cPixel<RGB>& b) { return RGB {
         (a.getRed() < b.getRed() ? a.getRed() : b.getRed()),
         (a.getGreen() < b.getGreen() ? a.getGreen() : b.getGreen()),
         (a.getBlue() < b.getBlue() ? a.getBlue() : b.getBlue()) };
     };
-    auto subtract = [](cPixel& a, cPixel& b) { return clamp({
+    auto subtract = [](cPixel<RGB>& a, cPixel<RGB>& b) { return clamp({
         (a.getRed() - b.getRed()),
         (a.getGreen() - b.getGreen()),
         (a.getBlue() - b.getBlue()) });
     };
-    auto multiply = [](cPixel& a, cPixel& b) { return RGB {
+    auto multiply = [](cPixel<RGB>& a, cPixel<RGB>& b) { return RGB {
         (a.getRed()*b.getRed()/255),
         (a.getGreen()*b.getGreen()/255),
         (a.getBlue()*b.getBlue()/255) };

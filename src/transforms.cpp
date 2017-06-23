@@ -8,6 +8,9 @@
 
 #include "transforms.hpp"
 
+using namespace MATRIX;
+using namespace VECTOR;
+
 mat rotationMat(double ang) {
     ang = DEGToRAD(ang);
     mat op=identityMat(3);
@@ -28,51 +31,136 @@ mat translationMat(double x, double y)  {
 }
 mat perspectiveMat(double x, double y);
 
-void forwardTransform (cImage& inputImg, cImage& outImage, mat& m)  {
-    for(int i=0;i<inputImg.getWidth();i++)  {
-        for(int j=0;j<inputImg.getHeight();j++) {
-            mat currPos{{static_cast<double>(i)},{static_cast<double>(j)},{1}};
-            mat finalPos = m*currPos;
-            if (0<=finalPos[0][0] && outImage.getWidth()>finalPos[0][0])    {
-                if (0<=finalPos[1][0] && outImage.getHeight()>finalPos[1][0])    {
-                    auto p = inputImg.getPixelAtXY(i, j);
-                    RGB col{p.getRed(),p.getGreen(),p.getBlue()};
-                    outImage.setPixelAtXY(static_cast<int>(finalPos[0][0]),static_cast<int>(finalPos[1][0]), col);
+//Scale transformations
+void TRANSFORM::scaleW(cImage &in, cImage &out, double x)   {   scale(in,out,x,1);  }
+void TRANSFORM::scaleH(cImage &in, cImage &out, double y) {   scale(in,out,1,y);  }
+void TRANSFORM::scale(cImage &in, cImage &out, double x, double y)   {
+    MATRIX::mat mat {
+        {x,0},
+        {0,y}
+    };
+    double det = MATRIX::det(mat);
+    mat[0][0] = y/det;
+    mat[1][1] = x/det;
+    inverseTransform(in, out, mat);
+}
+
+void TRANSFORM::rotateZ(cImage& in, cImage& out, double deg, vec2D p)  {
+    deg = DEGToRAD(deg);
+    MATRIX::mat mat {
+        {cos(deg),-sin(deg),(p.getX()-(p.getX()*cos(deg))+(p.getY()*sin(deg)))},
+        {sin(deg),cos(deg),(p.getY()-(p.getX()*sin(deg))-(p.getY()*cos(deg)))},
+        {0,0,1}
+    };
+    MATRIX::mat op = MATRIX::inverse(mat);
+    inverseTransform(in, out, op);
+}
+
+void TRANSFORM::translateX(cImage &in, cImage &out, double x)   {   translate(in,out,x,0);  }
+void TRANSFORM::translateY(cImage &in, cImage &out, double y)   {   translate(in,out,0,y);  }
+void TRANSFORM::translate(cImage &in, cImage &out, double x, double y)   {
+    MATRIX::mat mat {
+        {1,0,x},
+        {0,1,y},
+        {0,0,1}
+    };
+    MATRIX::mat op = MATRIX::inverse(mat);
+    inverseTransform(in, out, op);
+}
+
+void TRANSFORM::shearX(cImage &in, cImage &out, double x)   {   translate(in,out,x,0);  }
+void TRANSFORM::shearY(cImage &in, cImage &out, double y)   {   translate(in,out,0,y);  }
+void TRANSFORM::shear(cImage &in, cImage &out, double x, double y)   {
+    MATRIX::mat mat {
+        {1,x},
+        {y,1}
+    };
+    double det = MATRIX::det(mat);
+    if (0!=det) {
+        mat[0][0] = mat[1][1]/det;
+        mat[0][1] = -mat[0][1]/det;
+        mat[1][0] = -mat[1][0]/det;
+        mat[1][1] = mat[0][0]/det;
+        inverseTransform(in, out, mat);
+    }
+}
+
+void TRANSFORM::perspective(cImage &in, cImage &out, double x, double y)   {
+    MATRIX::mat mat {
+        {1,0,0},
+        {0,1,0},
+        {x,y,1}
+    };
+    auto f = [](MATRIX::mat m) {
+        m[0][0] = m[0][0]/m[2][0];
+        m[1][0] = m[1][0]/m[2][0];
+        return m;
+    };
+    forwardTransform(in, out, mat,f);
+}
+
+void inverseTransform(cImage& inputImg, cImage& outImage, MATRIX::mat& m)   {
+    if (2==m.size())    {
+        for(int x=0;x<outImage.getWidth();x++)  {
+            for(int y=0;y<outImage.getHeight();y++) {
+                MATRIX::mat outLoc{
+                    {static_cast<double>(x)},
+                    {static_cast<double>(y)}
+                };
+                mat inLoc = m*outLoc;
+                if (0<=inLoc[0][0] && inputImg.getWidth()>inLoc[0][0] && 0<=inLoc[1][0] && inputImg.getHeight()>inLoc[1][0])    {
+                    auto p = inputImg.getPixelAtXY(static_cast<int>(inLoc[0][0]), static_cast<int>(inLoc[1][0]));
+                    outImage.setPixelAtXY(x, y, p);
                 }
+            }
+        }
+    }
+    if (3==m.size())    {
+        for(int x=0;x<outImage.getWidth();x++)  {
+            for(int y=0;y<outImage.getHeight();y++) {
+                MATRIX::mat outLoc{
+                    {static_cast<double>(x)},
+                    {static_cast<double>(y)},
+                    {1}
+                };
+                mat inLoc = m*outLoc;
+                if (0<=inLoc[0][0] && inputImg.getWidth()>inLoc[0][0] && 0<=inLoc[1][0] && inputImg.getHeight()>inLoc[1][0])    {
+                    auto p = inputImg.getPixelAtXY(static_cast<int>(inLoc[0][0]), static_cast<int>(inLoc[1][0]));
+                    outImage.setPixelAtXY(x, y, p);
+                }
+            }
+        }
+    }
+}
+void forwardTransform(cImage& inputImg, cImage& outImage, MATRIX::mat& m, std::function<MATRIX::mat(MATRIX::mat)> step2)   {
+    for(int x=0;x<inputImg.getWidth();x++)  {
+        for(int y=0;y<inputImg.getHeight();y++) {
+            MATRIX::mat inLoc{
+                {static_cast<double>(x)},
+                {static_cast<double>(y)},
+                {1}
+            };
+            mat outLoc = m*inLoc;
+            outLoc = step2(outLoc);
+            if (0<=outLoc[0][0] && outImage.getWidth()>outLoc[0][0] && 0<=outLoc[1][0] && outImage.getHeight()>outLoc[1][0])    {
+                auto p = inputImg.getPixelAtXY(x, y);
+                outImage.setPixelAtXY(static_cast<int>(outLoc[0][0]), static_cast<int>(outLoc[1][0]), p);
             }
         }
     }
 }
 
 
-void inverseTransform (cImage& inputImg, cImage& outImage, mat& mF)  {
-    mat m = inverse(mF);
-    for(int i=0;i<outImage.getWidth();i++)  {
-        for(int j=0;j<outImage.getHeight();j++) {
-            mat destPos{{static_cast<double>(i)},{static_cast<double>(j)},{1}};
-            mat initialPos = m*destPos;
-            if (0<=initialPos[0][0] && inputImg.getWidth()>initialPos[0][0])    {
-                if (0<=initialPos[1][0] && inputImg.getHeight()>initialPos[1][0])    {
-                    auto p = inputImg.getPixelAtXY(static_cast<int>(initialPos[0][0]),static_cast<int>(initialPos[1][0]));
-                    outImage.setPixelAtXY(i,j,p);
-                }
-            }
-        }
-    }
-}
-
-
-
-void bilinearWarp(cImage& inputImg, cImage& outImage, vector<vector2D>& p)   {
-    double a0 = p[0].first; // zero
-    double a1 = p[3].first - p[0].first; // width
-    double a2 = p[1].first - p[0].first; // zero
-    double a3 = p[2].first - p[1].first - p[3].first + p[0].first; // 0
+void bilinearWarp(cImage& inputImg, cImage& outImage, vector<vec2D>& p)   {
+    double a0 = p[0].getX(); // zero
+    double a1 = p[3].getX() - p[0].getX(); // width
+    double a2 = p[1].getX() - p[0].getX(); // zero
+    double a3 = p[2].getX() - p[1].getX() - p[3].getX() + p[0].getX(); // 0
     
-    double b0 = p[0].second; // <zero
-    double b1 = p[3].second - p[0].second; // 0
-    double b2 = p[1].second - p[0].second; // height
-    double b3 = p[2].second - p[1].second - p[3].second + p[0].second; //0
+    double b0 = p[0].getY(); // <zero
+    double b1 = p[3].getY() - p[0].getY(); // 0
+    double b2 = p[1].getY() - p[0].getY(); // height
+    double b3 = p[2].getY() - p[1].getY() - p[3].getY() + p[0].getY(); //0
     
     int numSamples = 20;
     double xf, yf;
@@ -83,11 +171,11 @@ void bilinearWarp(cImage& inputImg, cImage& outImage, vector<vector2D>& p)   {
             for (int sample = 0; sample < numSamples; sample++) {
                 xf = 1.0*(x+(1.0*rand()/RAND_MAX));
                 yf = 1.0*(y+(1.0*rand()/RAND_MAX));
-
+                
                 float c0 = a1*(b0-yf)+b1*(xf-a0); // width*-y
                 float c1 = a3*(b0-yf)+b3*(xf-a0)+a1*b2-a2*b1; // width*height
                 float c2 = a3*b2 - a2*b3; // zero
-            
+                
                 double t1 = -c1/(2*c2);
                 double t2 = (sqrt(c1*c1-4*c2*c0))/(2*c2);
                 
@@ -115,24 +203,23 @@ void bilinearWarp(cImage& inputImg, cImage& outImage, vector<vector2D>& p)   {
         }
     }
 }
-
-void interestingTransform(cImage& inputImg, cImage& outImage)    {
-    double freq = 5;
-    double amp = 1;
-    mat m=identityMat(3);
-    for(int i=0;i<outImage.getWidth();i++)  {
-        for(int j=0;j<outImage.getHeight();j++) {
-            mat m=identityMat(3);
-            mat destPos{{static_cast<double>(i)},{static_cast<double>(j)},{1}};
-            m[0][0] = sin((2*PI/freq)*i);
-            m[1][1] = sin((2*PI/freq)*j);
-            mat initialPos = m*destPos;
-            if (0<=initialPos[0][0] && inputImg.getWidth()>initialPos[0][0])    {
-                if (0<=initialPos[1][0] && inputImg.getHeight()>initialPos[1][0])    {
-                    auto p = inputImg.getPixelAtXY(static_cast<int>(initialPos[0][0]),static_cast<int>(initialPos[1][0]));
-                    outImage.setPixelAtXY(i,j,p);
-                }
-            }
-        }
-    }
-}
+/*
+ void interestingTransform(cImage& inputImg, cImage& outImage)    {
+ double freq = 5;
+ mat m=identityMat(3);
+ for(int i=0;i<outImage.getWidth();i++)  {
+ for(int j=0;j<outImage.getHeight();j++) {
+ mat m=identityMat(3);
+ mat destPos{{static_cast<double>(i)},{static_cast<double>(j)},{1}};
+ m[0][0] = sin((2*PI/freq)*i);
+ m[1][1] = sin((2*PI/freq)*j);
+ mat initialPos = m*destPos;
+ if (0<=initialPos[0][0] && inputImg.getWidth()>initialPos[0][0])    {
+ if (0<=initialPos[1][0] && inputImg.getHeight()>initialPos[1][0])    {
+ auto p = inputImg.getPixelAtXY(static_cast<int>(initialPos[0][0]),static_cast<int>(initialPos[1][0]));
+ outImage.setPixelAtXY(i,j,p);
+ }
+ }
+ }
+ }
+ }*/

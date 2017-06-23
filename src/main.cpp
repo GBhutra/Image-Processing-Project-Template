@@ -7,15 +7,21 @@
 //
 
 #include <iostream>
-//#include "manipulation.hpp"
+#include <sstream>
+#include <iomanip>
+#include "manipulation.hpp"
 #include "dithering.hpp"
 #include "filters.hpp"
 //#include "2dShapes.hpp"
 #include "glFunctions.hpp"
-//#include "compositing.hpp"
-//#include "transforms.hpp"
+#include "compositing.hpp"
+#include "transforms.hpp"
 #include "cImage.hpp"
+#include "stich-carving.hpp"
 #include <map>
+#include <fstream>
+#include <stack>
+#include <string>
 
 namespace COLOR {
     //some common colors
@@ -79,33 +85,53 @@ void project8(map<string,string>& options)	{
     }
 }
 
+int timeConverter(string s) {
+    s[0]=' ';
+    s[s.length()-1]=' ';
+    stringstream iss(s);
+    string str;
+    stack<double> time;
+    while(getline(iss,str,':'))   {
+        time.push(stod(str));
+    }
+    int millsec=0, factor=1;
+    while(!time.empty())    {
+        millsec+=(time.top()*1000*factor);
+        factor*=60;
+        time.pop();
+    }
+    return millsec;
+}
 
 int main(int argc, char* argv[])	{
-    /*map<string,string> g_mapOptions={{"-output",""}, {"-input",""}, {"-dither",""}};
-    int numOpts = argc;
-    while(numOpts-->0)	{
-        auto option = g_mapOptions.find(string(argv[numOpts]));
-        if(option!=g_mapOptions.end())
-            g_mapOptions[string(argv[numOpts])]=string(argv[numOpts+1]);
-    }*/
-    MATRIX::mat m4 {
-        {1,0,0,0},
-        {0,1,0,0},
-        {0,0,1,0},
-        {0,0,0,1}
-    };
-    cout << "Determinant :"<<MATRIX::det(m4)<<endl;
+    ifstream input( "/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/samples.csv" );
+    string line, time, val1, val2;
+    getline(input, line);
+    getline(input, line);
+    for (int i=0;i<100)
+    while(getline(input, line)){
+       stringstream iss(line);
+        string s;
+        if (getline(iss,s,',')) {
+            cout<<" Time: "<<timeConverter(s)<<" ";
+        }
+        if (getline(iss,s,',')) {
+            cout<<" voltage: "<<stod(s)*500<<" ";
+        }
+        cout<<endl;
+    }
+    /*
     glutInit(&argc, argv);
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(canvas.getWidth(), canvas.getHeight());
     glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
-    glutCreateWindow("Project 8");
+    glutCreateWindow("Project 11");
     init();
     glutReshapeFunc(windowResize);
     glutDisplayFunc(windowDisplay);
     glutMouseFunc(processMouse);
     glutKeyboardFunc(processKeyBoard);
     glutMainLoop();
-
+     */
     return 0;
 }

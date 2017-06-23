@@ -14,16 +14,33 @@
 #include "cImage.hpp"
 #include "utility.hpp"
 
-mat rotationMat(double ang);
-mat scalingMat(double x, double y);
-mat shearMat(double x, double y);
-mat translationMat(double x, double y);
-mat perspectiveMat(double x, double y);
+MATRIX::mat rotationMat(double ang);
+MATRIX::mat scalingMat(double x, double y);
+MATRIX::mat shearMat(double x, double y);
+MATRIX::mat translationMat(double x, double y);
+MATRIX::mat perspectiveMat(double x, double y);
 
-void forwardTransform(cImage& inputImg, cImage& outImage, mat& m);
-void inverseTransform(cImage& inputImg, cImage& outImage, mat& m);
+void forwardTransform(cImage& inputImg, cImage& outImage, MATRIX::mat& m, std::function<MATRIX::mat(MATRIX::mat)>);
+void inverseTransform(cImage& inputImg, cImage& outImage, MATRIX::mat& m);
 void interestingTransform(cImage& inputImg, cImage& outImage);
-void bilinearWarp(cImage& inputImg, cImage& outImage, vector<vector2D>&);
+void bilinearWarp(cImage& inputImg, cImage& outImage, vector<VECTOR::vec2D>&);
 
+namespace TRANSFORM {
+    void scale(cImage& in, cImage& out, double x, double y);
+    void scaleW(cImage&, cImage&, double);
+    void scaleH(cImage&, cImage&, double);
+    
+    void rotateZ(cImage& in, cImage& out, double deg, VECTOR::vec2D p=VECTOR::vec2D(0,0));
+    
+    void translateX(cImage&, cImage&, double);
+    void translateY(cImage&, cImage&, double);
+    void translate(cImage&, cImage&, double, double);
+    
+    void shearX(cImage&, cImage&, double);
+    void shearY(cImage&, cImage&, double);
+    void shear(cImage&, cImage&, double, double);
+    
+    void perspective(cImage&, cImage&, double, double);
+}
 
 #endif /* transforms_hpp */

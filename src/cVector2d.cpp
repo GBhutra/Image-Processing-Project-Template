@@ -9,52 +9,48 @@
 #include "cVector2d.hpp"
 
 namespace VECTOR    {
-    double vec2D::getX()   {   return x1;   }
-    double vec2D::getY()   {   return y1;   }
+    double vec2D::getX()   {   return x;   }
+    double vec2D::getY()   {   return y;   }
     
-    void vec2D::setX(double val)   {   x1=val;   }
-    void vec2D::setY(double val)   {   y1=val;   }
+    void vec2D::setX(double val)   {   x=val;   }
+    void vec2D::setY(double val)   {   y=val;   }
     
     double vec2D::magnitude()   {
-        return (sqrt(pow((x1-x0),2)+pow((y1-y0),2)));
+        return (sqrt(pow((x),2)+pow((y),2)));
     }
     
     double vec2D::direction()   {
-        return acos((x1-x0)/this->magnitude());
+        return acos((x)/this->magnitude());
     }
     
     vec2D vec2D::normalized()   {
-        return vec2D((x1-x0)/this->magnitude(), (y1-y0)/this->magnitude());
+        return vec2D((x)/this->magnitude(), (y)/this->magnitude());
     }
     
     double vec2D::dot(const vec2D& v2)    {
-        double temp1 = (x1-x0)*(v2.x1-v2.x0);
-        double temp2 = (y1-y0)*(v2.y1-v2.y0);
+        double temp1 = (x)*(v2.x);
+        double temp2 = (y)*(v2.y);
         return (temp1+temp2);
     }
     
     vec2D vec2D::cross(const vec2D& v2) {
-        return vec2D(((x1-x0)*(v2.y1-v2.y0)), ((y1-y0)*(v2.x1-v2.x0)));
+        return vec2D(((x)*(v2.y)), ((y)*(v2.x)));
     }
     
     vec2D operator+(const vec2D& v1, const vec2D& v2) {
-        return vec2D(((v1.x1-v1.x0)+(v2.x1-v2.x0)), ((v1.y1-v1.y0)+(v2.y1-v2.y0)));
+        return vec2D(((v1.x)+(v2.x)), ((v1.y)+(v2.y)));
     }
     
     vec2D operator-(const vec2D& v1, const vec2D& v2) {
-        return vec2D(((v1.x1-v1.x0)-(v2.x1-v2.x0)), ((v1.y1-v1.y0)-(v2.y1-v2.y0)));
+        return vec2D(((v1.x)-(v2.x)), ((v1.y)-(v2.y)));
     }
     
     vec2D operator*(const vec2D& v, double val)   {
-        point2D dst{v.x1*val,v.y1*val};
-        point2D src{v.x0*val,v.y0*val};
-        return vec2D(src,dst);
+        return vec2D(v.x*val, v.y*val);
     }
     
     vec2D operator/(const vec2D& v, double val){
-        point2D dst{v.x1/val,v.y1/val};
-        point2D src{v.x0/val,v.y0/val};
-        return vec2D(src,dst);
+        return vec2D(v.x/val, v.y/val);
     }
 }
 
@@ -94,7 +90,6 @@ namespace MATRIX {
         op[2][0] = (mT[0][1]*mT[1][2]-mT[1][1]*mT[0][2])/det;
         op[2][1] = -(mT[0][0]*mT[1][2]-mT[1][0]*mT[0][2])/det;
         op[2][2] = (mT[0][0]*mT[1][1]-mT[1][0]*mT[0][1])/det;
-        
         return op;
     }
     
@@ -127,12 +122,57 @@ namespace MATRIX {
         }
         return op;
     }
-    mat operator/(const mat&, double);
+    
+    //matrix division
+    mat operator/(const mat& m, double val)   {
+        mat out=m;
+        for (auto& row:out)  {
+            for (auto& col : row)    {
+                col = col/val;
+            }
+        }
+        return out;
+    }
     
     //Matrix operations
-    mat operator+(const mat&, const mat&);
-    mat operator-(const mat&, const mat&);
-    mat operator*(const mat&, const mat&);
+    
+    //Addition
+    mat operator+(const mat& lhs, const mat& rhs)   {
+        if (lhs.size()!=rhs.size() && lhs[0].size()!=rhs[0].size())
+            return identityMat(0);
+        mat out = lhs;
+        for (int i=0;i<lhs.size();i++) {
+            for (int j=0;j<lhs[0].size();j++)   {
+                out[i][j]+=rhs[i][j];
+            }
+        }
+        return out;
+    }
+    //Subtraction
+    mat operator-(const mat& lhs, const mat& rhs)   {
+        if (lhs.size()!=rhs.size() && lhs[0].size()!=rhs[0].size())
+            return identityMat(0);
+        mat out = lhs;
+        for (int i=0;i<lhs.size();i++) {
+            for (int j=0;j<lhs[0].size();j++)   {
+                out[i][j]-=rhs[i][j];
+            }
+        }
+        return out;
+    }
+    //Matrix multiplication
+    mat operator*(const mat& lhs, const mat& rhs)   {
+        if (lhs[0].size()!=rhs.size())
+            return identityMat(0);
+        mat op(lhs.size(),vector<double>(rhs[0].size(),0));
+        for (int i=0;i<lhs.size();i++) {
+            for (int j=0;j<rhs[0].size();j++)   {
+                for (int k=0;k<lhs[0].size();k++)
+                    op[i][j] += lhs[i][k] * rhs[k][j];
+            }
+        }
+        return op;
+    }
     
     //print the matrix
     void showMatrix(mat& m) {

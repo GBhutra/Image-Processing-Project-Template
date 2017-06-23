@@ -27,12 +27,11 @@ namespace DITHER {
     
     void toGrayScaleAVG(cImage& inputImg, cImage& outImg)  {
         short colSum = 0;
-        cPixel<RGB> p(RGB{0,0,0});
         for (int x=0;x<inputImg.getWidth();++x) {
             for (int y=0;y<inputImg.getHeight();y++) {
-                p = inputImg.getPixelAtXY(x, y);
+                auto p = inputImg.getPixelAtXY(x, y);
                 colSum = p.getRed()+ p.getGreen()+ p.getBlue();
-                colSum/=3;
+                colSum=colSum/3;
                 outImg.setPixelAtXY(x, y, RGB{colSum,colSum,colSum});
             }
         }
@@ -56,7 +55,9 @@ namespace DITHER {
                 }
                 double val = (double)colSum/(255*9);
                 val = 1-val;
-                if (0.1 < val && 0.2 > val) {
+                if (0 < val && 0.1 > val)   {
+                }
+                else if (0.1 < val && 0.2 > val) {
                     outImg.setPixelAtXY(x+1, y+1, RGB{0,0,0});
                 }
                 else if (0.2 < val && 0.3 > val){
@@ -187,7 +188,7 @@ namespace DITHER {
             for (int y=1;y<inputImg.getHeight()-1;y++) {
                 short rCol = inputImg.getPixelAtXY(x,y).getRed();
                 double temp = kernel.getPixelAtXY(x%kernel.getWidth(), y%kernel.getHeight()).getRed();
-                temp = (temp+0.5)/colSum;
+                temp = (temp+0.5)/255;
                 short thres = static_cast<short>(temp*255);
                 if (rCol > thres)
                     outImg.setPixelAtXY(x,y,{255,255,255});
@@ -257,6 +258,29 @@ namespace DITHER {
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+    void kerneled(cImage& im1, cImage& out, cImage& k)  {
+        double tot = 0;
+        for(int i=0;i<k.getWidth();i++)   {
+            for (int j=0;j<k.getHeight();j++) {
+                tot+=k.getPixelAtXY(i, j).getRed();
+            }
+        }
+        for (int x=0;x<im1.getWidth()-1;x+=k.getWidth()) {
+            for (int y=1;y<im1.getHeight()-1;y+=k.getHeight()) {
+                for(int i=0;i<k.getWidth();i++)   {
+                    for (int j=0;j<k.getHeight();j++) {
+                        auto p = im1.getPixelAtXY(x+i,y+j);
+                        short col = p.getRed();
+                        if (col<80)    {
+                            out.setPixelAtXY(x+i,y+j,k.getPixelAtXY(i,j));
+                        }
+                        else
+                            out.setPixelAtXY(x+i,y+j,RGB{0,0,0});
                     }
                 }
             }

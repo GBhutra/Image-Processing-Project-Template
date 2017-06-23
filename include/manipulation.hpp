@@ -13,12 +13,7 @@
 #include "cImage.hpp"
 #include "cVector2d.hpp"
 
-
-double h0(double t){	return 2*t*t*t - 3*t*t + 1;}
-double h1(double t){	return (-2)*t*t*t + 3*t*t ;}
-double h2(double t){	return t*t*t - 2*t*t + t;}
-double h3(double t){	return t*t*t - t*t ;}
-
+/*
 cImage replaceHue(cImage& inputFile, cImage& controlFile) {
     for (int i=0;i<inputFile.getHeight();++i) {
         for (int j=0;j<inputFile.getWidth();++j) {
@@ -32,6 +27,6 @@ cImage replaceHue(cImage& inputFile, cImage& controlFile) {
     }
     return inputFile;
 };
-
+*/
 
 #endif /* manipulation_h */

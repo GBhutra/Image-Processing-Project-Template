@@ -21,6 +21,25 @@
 
 using namespace VECTOR;
 // This data structure defines a line
+
+namespace SHAPE {
+    class shape{
+        virtual double distFromPoint(const vec2D)=0;
+        virtual bool isPointInside(const vec2D);
+    };
+    
+    class line : public shape   {
+        vec2D p;
+        double angle;
+    public:
+        line() = delete;
+        line(const vec2D p1, const vec2D p2) : p(p1), angle((p2-p1).direction())    {};
+        line(double deg) : p(0,0), angle(deg)  {};
+        
+        double distFromPoint(const vec2D);
+    };
+}
+#if 0
 struct line {
     //normal vector
     vec2D normalUnitVector;
@@ -98,8 +117,10 @@ public:
     bool isPointIn(const vec2D&);
 };
 
+
 void drawLine(line &l,cImage& img, RGB color, bool antiAlias=false);
 void drawShape(shape& poly, cImage& img, RGB color, bool antiAlias=false);
 void drawCircularShade(circle& c, cImage& img, RGB color);
 void drawCircle(circle& c, cImage& img, RGB color , bool antiAlias);
+#endif
 #endif /* _dShapes_hpp */

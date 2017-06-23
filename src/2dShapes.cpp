@@ -8,13 +8,22 @@
 
 #include "2dShapes.hpp"
 
-line::line(const vector2D& p1, const vector2D& p2) {
+using namespace VECTOR;
+using namespace SHAPE;
+#if 0
+double line::distFromPoint(const vec2D p) {
+    double norm = dot(normalUnitVector,p);
+    return (norm-distFromOrigin);
+}
+
+
+line::line(const vec2D& p1, const vec2D& p2) {
     normalUnitVector = normalVector(p2-p1);
     distFromOrigin = dot(normalUnitVector,p1);
 };
 
 //returns +ve dist for the point on the right and negative dist for point on the left of the line
-double line::isPointIn(const vector2D& p)  {
+double line::isPointIn(const vec2D& p)  {
     double norm = dot(normalUnitVector,p);
     return (norm-distFromOrigin);;
 }
@@ -39,7 +48,7 @@ void drawLine(line &l,cImage& img, RGB color, bool antiAlias)   {
     }
 }
 
-convex::convex(vector<vector2D>& vertices) {
+convex::convex(vector<vec2D>& vertices) {
     for (int i=0;i<vertices.size()-1;i++) {
         line l(vertices[i],vertices[i+1]);
         edges.push_back(l);
@@ -48,11 +57,11 @@ convex::convex(vector<vector2D>& vertices) {
     edges.push_back(l);
 }
 
-bool circle::isPointIn(const vector2D& p)   {
+bool circle::isPointIn(const vec2D& p)   {
     return (radius-magnitude(center-p) > 0 ? true : false);
 }
 
-bool convex::isPointIn(const vector2D& p)  {
+bool convex::isPointIn(const vec2D& p)  {
     int count=0;
     for (auto edge : edges) {
         if (0<edge.isPointIn(p))
@@ -64,7 +73,7 @@ bool convex::isPointIn(const vector2D& p)  {
         return false;
 }
 
-bool star::isPointIn(const vector2D& p)  {
+bool star::isPointIn(const vec2D& p)  {
     int count=0;
     for (auto edge : edges) {
         if (0<edge.isPointIn(p))
@@ -76,7 +85,7 @@ bool star::isPointIn(const vector2D& p)  {
         return true;
 }
 
-bool func::isPointIn(const vector2D& p)    {
+bool func::isPointIn(const vec2D& p)    {
    // y=50e^(-(x-250)/100)sin((x-250)/10)+250
     if (5>(p.second-(60*exp((250-p.first)/200)*sin((p.first-250)/10))-250))
         return true;
@@ -84,7 +93,7 @@ bool func::isPointIn(const vector2D& p)    {
         return false;
 }
 
-bool blob::isPointIn(const vector2D& p)   {
+bool blob::isPointIn(const vec2D& p)   {
     double alpha = 0.4e-4;
     double res = 0;
     for (auto c : circles)  {
@@ -226,3 +235,4 @@ void cHistogram::genHistogram(cImage& img)    {
         currB = nextB;
     }
 }*/
+#endif
