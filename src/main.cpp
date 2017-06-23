@@ -104,23 +104,8 @@ int timeConverter(string s) {
 }
 
 int main(int argc, char* argv[])	{
-    ifstream input( "/Users/Ghanshyam/Documents/MS Courses/CSCE 646 Digital Image processing/ProjectTemplate/test/samples.csv" );
-    string line, time, val1, val2;
-    getline(input, line);
-    getline(input, line);
-    for (int i=0;i<100)
-    while(getline(input, line)){
-       stringstream iss(line);
-        string s;
-        if (getline(iss,s,',')) {
-            cout<<" Time: "<<timeConverter(s)<<" ";
-        }
-        if (getline(iss,s,',')) {
-            cout<<" voltage: "<<stod(s)*500<<" ";
-        }
-        cout<<endl;
-    }
-    /*
+    
+    
     glutInit(&argc, argv);
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(canvas.getWidth(), canvas.getHeight());
@@ -132,6 +117,5 @@ int main(int argc, char* argv[])	{
     glutMouseFunc(processMouse);
     glutKeyboardFunc(processKeyBoard);
     glutMainLoop();
-     */
     return 0;
 }
